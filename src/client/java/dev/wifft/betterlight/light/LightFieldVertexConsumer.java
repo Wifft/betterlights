@@ -1,6 +1,7 @@
 package dev.wifft.betterlight.light;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.wifft.betterlight.duck.LightFieldHolder;
 
 // Unified lighting (MC-231102): replaces the per-object light of every vertex with the LightField value at its position
 public class LightFieldVertexConsumer implements VertexConsumer {
@@ -13,6 +14,12 @@ public class LightFieldVertexConsumer implements VertexConsumer {
 	public LightFieldVertexConsumer(final VertexConsumer delegate, final LightField field) {
 		this.delegate = delegate;
 		this.field = field;
+	}
+
+	// The buffer for a submit (a LightFieldHolder), wrapped when it carries a light field
+	public static VertexConsumer wrap(final VertexConsumer buffer, final Object submit) {
+		LightField field = LightFieldHolder.of(submit);
+		return field != null ? new LightFieldVertexConsumer(buffer, field) : buffer;
 	}
 
 	@Override
