@@ -1,0 +1,986 @@
+Calculating task graph as no cached configuration is available for tasks: runClient
+
+> Configure project :
+Fabric Loom: 1.19.3
+
+> Task :processResources UP-TO-DATE
+> Task :processClientResources UP-TO-DATE
+> Task :compileJava UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :generateLog4jConfig
+> Task :generateDLIConfig
+> Task :configureLaunch
+> Task :compileClientJava
+> Task :clientClasses
+> Task :downloadAssets
+> Task :configureClientLaunch
+
+> Task :runClient
+[13:30:51] [main/INFO] (FabricLoader/GameProvider) Loading Minecraft 26.4-snapshot-5 with Fabric Loader 0.20.1
+[13:30:51] [main/INFO] (FabricLoader/Mappings) Mappings not present!
+[13:30:52] [main/INFO] (FabricLoader) Loading 51 mods:
+	- betterlight 0.1.0
+	- fabric-advancement-api-v1 1.0.4+24b2efa99f
+	- fabric-api 0.165.0+26.4
+	- fabric-api-base 2.0.8+24b2efa99f
+	- fabric-api-lookup-api-v1 2.0.27+24b2efa99f
+	- fabric-biome-api-v1 20.1.5+458d622a9f
+	- fabric-block-api-v1 3.1.3+dc58e4069f
+	- fabric-block-getter-api-v2 2.0.11+24b2efa99f
+	- fabric-client-gametest-api-v1 6.0.14+dc58e4069f
+	- fabric-command-api-v2 3.1.4+24b2efa99f
+	- fabric-convention-tags-v2 4.12.0+f30078ad9f
+	- fabric-crash-report-info-v1 1.0.8+24b2efa99f
+	- fabric-creative-tab-api-v1 5.0.25+dc58e4069f
+	- fabric-data-attachment-api-v1 2.2.39+24b2efa99f
+	- fabric-data-generation-api-v1 28.0.2+e260d4739f
+	- fabric-debug-api-v1 1.0.8+dc58e4069f
+	- fabric-dimensions-v1 5.1.25+24b2efa99f
+	- fabric-entity-events-v1 6.0.7+dc58e4069f
+	- fabric-events-interaction-v0 5.3.13+24b2efa99f
+	- fabric-game-rule-api-v1 4.0.13+dc58e4069f
+	- fabric-gametest-api-v1 4.0.41+24b2efa99f
+	- fabric-item-api-v1 14.8.1+dc58e4069f
+	- fabric-key-mapping-api-v1 2.0.9+24b2efa99f
+	- fabric-lifecycle-events-v1 4.1.11+24b2efa99f
+	- fabric-loot-api-v3 4.0.12+24b2efa99f
+	- fabric-menu-api-v1 2.0.36+dc58e4069f
+	- fabric-message-api-v1 7.0.12+24b2efa99f
+	- fabric-model-loading-api-v1 8.0.44+24b2efa99f
+	- fabric-networking-api-v1 6.4.0+52758e419f
+	- fabric-object-builder-api-v1 25.0.5+8898038e9f
+	- fabric-particles-v1 5.0.32+dc58e4069f
+	- fabric-permission-api-v1 1.0.10+24b2efa99f
+	- fabric-recipe-api-v1 10.0.15+24b2efa99f
+	- fabric-registry-sync-v0 8.1.2+dc58e4069f
+	- fabric-renderer-api-v1 17.0.24+24b2efa99f
+	- fabric-renderer-indigo 9.1.32+24b2efa99f
+	- fabric-rendering-fluids-v1 6.0.10+dc58e4069f
+	- fabric-rendering-v1 29.1.0+f8b8d7329f
+	- fabric-resource-conditions-api-v1 6.2.1+24b2efa99f
+	- fabric-resource-loader-v0 3.3.30+4fc5413f9f
+	- fabric-resource-loader-v1 3.1.2+dc58e4069f
+	- fabric-screen-api-v1 6.0.0+dc58e4069f
+	- fabric-serialization-api-v1 2.0.8+24b2efa99f
+	- fabric-sound-api-v1 2.0.8+24b2efa99f
+	- fabric-tag-api-v1 2.1.14+24b2efa99f
+	- fabric-transfer-api-v1 8.0.29+dc58e4069f
+	- fabric-transitive-access-wideners-v1 9.0.2+dc58e4069f
+	- fabricloader 0.20.1
+	- java 25
+	- minecraft 26.4-alpha.5
+	- mixinextras 0.5.5
+[13:30:52] [main/INFO] (FabricLoader/Mixin) SpongePowered MIXIN Subsystem Version=0.8.7 Source=file:/C:/Users/wifft/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.17.5+mixin.0.8.7/cef8519a91129d0c21fa03bb9378f0e8ca810e5/sponge-mixin-0.17.5+mixin.0.8.7.jar Service=Knot/Fabric Env=CLIENT
+[13:30:54] [main/INFO] (FabricLoader/MixinExtras|Service) Initializing MixinExtras via com.llamalad7.mixinextras.service.MixinExtrasServiceImpl(version=0.5.5).
+[13:30:55] [Datafixer Bootstrap #0/INFO] (Minecraft) 311 Datafixer optimizations took 337 milliseconds
+[13:31:01] [Render thread/INFO] (Minecraft) Environment: Environment[discoveryUrl=https://discovery.minecraftservices.com/minecraft/client, name=PROD]
+[13:31:01] [Render thread/INFO] (Minecraft) Setting user: Player194
+[13:31:01] [Render thread/INFO] (Indigo) [Indigo] Registering Indigo renderer!
+[13:31:01] [Render thread/INFO] (Minecraft) Backend library: LWJGL version 3.4.3-snapshot
+[13:31:01] [Render thread/INFO] (Minecraft) SDL [SYSTEM]: App name: Minecraft
+[13:31:01] [Render thread/INFO] (Minecraft) SDL [SYSTEM]: App version: 26.4 Snapshot 5
+[13:31:01] [Render thread/INFO] (Minecraft) SDL [SYSTEM]: App ID: com.mojang.minecraft
+[13:31:01] [Render thread/INFO] (Minecraft) SDL [SYSTEM]: SDL revision: SDL-3.4.14-62f10da
+[13:31:02] [Render thread/INFO] (Minecraft) Optional FeatureSet [AMD Buffer Marker] not supported
+[13:31:02] [Render thread/INFO] (Minecraft) Enabling optional FeatureSet [EXT MultiDraw]
+[13:31:02] [Render thread/INFO] (Minecraft) Optional FeatureSet [NV Diagnostic Checkpoint] not supported
+[13:31:02] [Render thread/INFO] (Minecraft) Optional FeatureSet [Calibrated Timestamps] not supported
+[13:31:02] [Render thread/INFO] (Minecraft) Optional FeatureSet [DXGI Surface] not supported
+[13:31:02] [Render thread/INFO] (Minecraft) Enabling optional FeatureSet [Wireframe]
+[13:31:02] [Render thread/INFO] (Minecraft) Using graphics backend Vulkan, using drivers: 1.3.295 Qualcomm Technologies Inc. Adreno Vulkan Driver Driver Build: b3549aaa68, I04672aa9d4, 1769138363
+Date: 01/23/2026
+Compiler Version: E031.50.36.00
+Driver Branch: bvt165
+
+[13:31:02] [Render thread/INFO] (Minecraft) Using graphics device: Qualcomm(R) Adreno(TM) X1-85 GPU (QUALCOMM)
+[13:31:02] [Render thread/INFO] (Minecraft) Using graphics device extensions: VK_KHR_synchronization2 (D), VK_EXT_multi_draw (D), VK_EXT_vertex_attribute_divisor (D), VK_KHR_win32_surface (I), VK_KHR_swapchain (D), VK_KHR_surface (I), VK_EXT_debug_utils (I)
+[13:31:02] [Render thread/INFO] (Minecraft) Created window using SDL video driver: windows
+[13:31:03] [Download-1/INFO] (Minecraft) Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: FabricMC
+[13:31:03] [Render thread/INFO] (Minecraft) Reloading ResourceManager: vanilla, vanilla, betterlight, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-client-gametest-api-v1, fabric-command-api-v2, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-gametest-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader
+[13:31:03] [Worker-Main-5/INFO] (Minecraft) Found unifont_all_no_pua-17.0.01.hex, loading
+[13:31:03] [Worker-Main-9/INFO] (Minecraft) Found unifont_pua-17.0.01.hex, loading
+[13:31:04] [Worker-Main-4/INFO] (Minecraft) Found unifont_jp_patch-17.0.01.hex, loading
+Global Value Global Value @fullLiteral113_c177 = internal  __constant constant float @fullLiteral113_c177 = internal  __constant constant float 0x3FEA222220000000, align 4
+
+Global Value @fullLiteral114_c178 = internal  __constant constant float 0x3F5141CF20000000, align 4
+
+Global Value @fullLiteral115_c179 = internal  __constant constant float 0x3FE7FFFE60000000, align 4
+
+Global Value @fullLiteral16_c80 = internal  __constant constant float 8.750000e+00, align 4
+
+Global Value @fullLiteral17_c81 = internal  __constant constant float 0xBFF741CC60000000, align 4
+
+Global Value @fullLiteral18_c82 = internal  __constant constant float 0x400FF319C0000000, align 4
+
+Global Value @fullLiteral116_c180 = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+Global Value @fullLiteral19_c83 = internal  __constant constant float 0x3FF741CC60000000, align 4
+
+Global Value @fullLiteral106_c170 = internal  __constant constant float 0x3FEB6DB6E0000000, align 4
+
+Global Value @fullLiteral107_c171 = internal  __constant constant float 0x3FEF0C6040000000, align 4
+
+Global Value @fullLiteral108_c172 = internal  __constant constant float 0x3FCEFBE540000000, align 4
+
+Global Value @fullLiteral109_c173 = internal  __constant constant float 0xBFEF0C6040000000, align 4
+
+Global Value @fullLiteral99_c163 = internal  __constant constant float 0x3FECEC4EC0000000, align 4
+
+Global Value @fullLiteral100_c164 = internal  __constant constant float 0x3FE52AEBA0000000, align 4
+
+Global Value @fullLiteral101_c165 = internal  __constant constant float 0xBFF0F85520000000, align 4
+
+Global Value @fullLiteral102_c166 = internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+Global Value @fullLiteral92_c156 = internal  __constant constant float 0x3FEEAAAAA0000000, align 4
+
+Global Value @fullLiteral93_c157 = internal  __constant constant float 0xBFEC3BBC00000000, align 4
+
+Global Value @fullLiteral94_c158 = internal  __constant constant float 0xBFF368C5C0000000, align 4
+
+Global Value @fullLiteral95_c159 = internal  __constant constant float 0x3FEC3BBC00000000, align 4
+
+Global Value @fullLiteral85_c149 = internal  __constant constant float 0x3FF05D1740000000, align 4
+
+Global Value @fullLiteral86_c150 = internal  __constant constant float 0xBFFB9229C0000000, align 4
+
+Global Value @fullLiteral87_c151 = internal  __constant constant float 0x3FD3881740000000, align 4
+
+Global Value @fullLiteral88_c152 = internal  __constant constant float 0x3FFB9229C0000000, align 4
+
+Global Value @fullLiteral78_c142 = internal  __constant constant float 0x3FF19999A0000000, align 4
+
+Global Value @fullLiteral79_c143 = internal  __constant constant float 0xBFE5E92100000000, align 4
+
+Global Value @fullLiteral80_c144 = internal  __constant constant float 0x3FFE10F740000000, align 4
+
+Global Value @fullLiteral81_c145 = internal  __constant constant float 0x3FE5E92100000000, align 4
+
+Global Value @0x3FEA222220000000, align 4
+
+Global Value @fullLiteral114_c178 = internal  __constant constant float 0x3F5141CF20000000, align 4
+
+Global Value @fullLiteral115_c179 = internal  __constant constant float 0x3FE7FFFE60000000, align 4
+
+Global Value @fullLiteral16_c80 = internal  __constant constant float 8.750000e+00, align 4
+
+Global Value @fullLiteral17_c81 = internal  __constant constant float 0xBFF741CC60000000, align 4
+
+Global Value @fullLiteral18_c82 = internal  __constant constant float 0x400FF319C0000000, align 4
+
+Global Value @fullLiteral116_c180 = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+Global Value @fullLiteral19_c83 = internal  __constant constant float 0x3FF741CC60000000, align 4
+
+Global Value @fullLiteral106_c170 = internal  __constant constant float 0x3FEB6DB6E0000000, align 4
+
+Global Value @fullLiteral107_c171 = internal  __constant constant float 0x3FEF0C6040000000, align 4
+
+Global Value @fullLiteral108_c172 = internal  __constant constant float 0x3FCEFBE540000000, align 4
+
+Global Value Global Value @fullLiteral109_c173 = internal  __constant constant float 0xBFEF0C6040000000, align 4
+
+Global Value @fullLiteral99_c163 = internal  __constant constant float 0x3FECEC4EC0000000, align 4
+
+Global Value @fullLiteral121_c185 = internal  __constant constant float 7.812500e-01, align 4
+@
+fullLiteral100_c164Global Value  = internal  __constant constant float 0x3FE52AEBA0000000, align 4
+
+Global Value @fullLiteral122_c186 = internal  __constant constant float @0xfullLiteral101_c165 = internal  __constant constant float BFDF8142A00000000x, align 4
+
+BFF0F85520000000, align 4Global Value 
+
+Global Value @fullLiteral123_c187 = internal  __constant constant float 0x3FB66DB0C0000000, align 4
+@
+fullLiteral102_c166 = Global Value internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+Global Value @fullLiteral17_c81 = internal  __constant constant float 8.750000e+00, align 4
+
+@Global Value fullLiteral92_c156 = internal  __constant constant float 0x3FEEAAAAA0000000, align 4
+
+Global Value @fullLiteral18_c82 = internal  __constant constant float 0xBFF741CC60000000, align 4
+
+@Global Value fullLiteral93_c157 = internal  __constant constant float 0xBFEC3BBC00000000, align 4
+
+Global Value @fullLiteral19_c83 = internal  __constant constant float 0x400FF319C0000000, align 4
+
+Global Value @fullLiteral124_c188 = internal  __constant constant float 0x3FDF8142A0000000, align 4
+
+Global Value @fullLiteral20_c84 = internal  __constant constant float 0x3FF741CC60000000, align 4
+
+Global Value fullLiteral71_c135@ = fullLiteral114_c178 = internal  __constant constant float internal 0x3FEA222220000000, align 4
+
+Global Value  __constant constant float 0x3FF31C71C0000000, align 4
+
+Global Value @fullLiteral115_c179 = internal  __constant constant float 0x3F5141CF20000000, align 4
+
+Global Value @fullLiteral116_c180 = internal  __constant constant float @0x3FE7FFFE60000000, align 4
+
+fullLiteral72_c136 = internal  __constant constant float Global Value 0x3FF529DCC0000000, align 4
+
+Global Value @fullLiteral117_c181 = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+@fullLiteral73_c137 = internal  __constant constant float Global Value 0x3FFD1F4BA0000000, align 4
+
+Global Value @fullLiteral107_c171 = internal  __constant constant float 0x3FEB6DB6E0000000, align 4
+
+@Global Value fullLiteral74_c138 = internal  __constant constant float 0xBFF529DCC0000000, align 4
+
+Global Value @fullLiteral108_c172 = internal  __constant constant float 0x3FEF0C6040000000, align 4
+
+Global Value @fullLiteral64_c128 = internal  __constant constant float 1.312500e+00, align 4
+
+Global Value @fullLiteral109_c173 = internal  __constant constant float 0x3FCEFBE540000000, align 4
+
+@fullLiteral65_c129 = internal  __constant constant float Global Value 0x4003FCEAC0000000, align 4
+
+Global Value @fullLiteral110_c174 = internal  __constant constant float @0xBFEF0C6040000000, align 4
+
+fullLiteral66_c130 = internal Global Value  __constant constant float 0x3FB6350CA0000000, align 4
+
+Global Value @fullLiteral100_c164 = internal  __constant constant float 0x3FECEC4EC0000000, align 4
+
+@Global Value fullLiteral67_c131 = internal  __constant constant float 0xC003FCEAC0000000, align 4
+
+Global Value @fullLiteral101_c165 = internal  __constant constant float 0x3FE52AEBA0000000, align 4
+
+Global Value @fullLiteral57_c121 = internal  __constant constant float 0x3FF76DB6E0000000, align 4
+
+@Global Value fullLiteral102_c166 = internal  __constant constant float 0xBFF0F85520000000, align 4
+
+Global Value @fullLiteral58_c122 = internal  __constant constant float 0x3FFE915880000000, align 4
+
+Global Value @fullLiteral103_c167 = internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+Global Value @fullLiteral93_c157 = internal  __constant constant float 0x3FEEAAAAA0000000, align 4
+
+Global Value @fullLiteral94_c158 = internal  __constant constant float 0xBFEC3BBC00000000, align 4
+
+Global Value @fullLiteral95_c159 = internal  __constant constant float 0xBFF368C5C0000000, align 4
+
+Global Value @fullLiteral96_c160 = internal  __constant constant float 0x3FEC3BBC00000000, align 4
+
+Global Value @fullLiteral86_c150 = internal  __constant constant float 0x3FF05D1740000000, align 4
+
+Global Value @@fullLiteral87_c151 = internal  __constant constant float fullLiteral59_c123 = internal  __constant constant float 0xBFFB9229C00000000x, align BFFFA5F440000000, align 4
+4
+
+
+Global Value Global Value @fullLiteral88_c152 = internal  __constant constant float 0x3FD3881740000000, align 4
+
+@fullLiteral60_c124 = internal  __constant constant float Global Value 0xBFFE915880000000, align 4
+
+Global Value @fullLiteral89_c153 = internal  __constant constant float 0x3FFB9229C0000000, align 4
+
+@fullLiteral50_c114 = internal  __constant constant float Global Value 0x3FFAAAAAA0000000, align 4
+
+Global Value @fullLiteral79_c143 = internal  __constant constant @floatfullLiteral51_c115 = internal  __constant constant float  0xBF45C615E0000000, align 4
+
+0x3FF19999A0000000, align 4
+Global Value 
+Global Value @fullLiteral52_c116 = internal  __constant constant float @-3.000000e+00fullLiteral80_c144 = internal  __constant constant float , align 4
+
+0xBFE5E92100000000, align 4
+
+Global Value Global Value @fullLiteral53_c117@ = internal  __constant constant float fullLiteral81_c145 = internal  __constant constant float 0x3F45C615E0000000, align 4
+0x3FFE10F740000000, align 4
+
+
+Global Value Global Value @@fullLiteral43_c107 = internal  __constant constant float 0x3FFF333340000000, align 4
+
+Global Value @fullLiteral44_c108 = internal  __constant constant float 0xC000B5EE00000000, align 4
+
+Global Value @fullLiteral45_c109 = internal  __constant constant float 0xC003EB2E60000000, align 4
+
+Global Value @fullLiteral46_c110 = internal  __constant constant float 0x4000B5EE00000000, align 4
+
+Global Value @fullLiteral36_c100 = internal  __constant constant float 2.375000e+00, align 4
+
+Global Value @fullLiteral37_c101 = internal  __constant constant float 0xC00B2AFE80000000, align 4
+
+Global Value @fullLiteral38_c102 = internal  __constant constant float 0xBFEB19C100000000, align 4
+
+Global Value @fullLiteral39_c103 = internal  __constant constant float 0x400B2AFE80000000, align 4
+
+Global Value @fullLiteral29_c93 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+
+Global Value @fullLiteral30_c94 = internal  __constant constant float 0xC00C8828E0000000, align 4
+
+Global Value @fullLiteral31_c95 = internal  __constant constant float 0x3FF28A3880000000, align 4
+
+Global Value @fullLiteral32_c96 = internal  __constant constant float 0x400C8828E0000000, align 4
+
+Global Value @fullLiteral6_c70 = internal  __constant constant float 4.500000e+00, align 4
+
+Global Value @fullLiteral20_c84 = internal  __constant constant float 0xC0063AA5A0000000, align 4
+
+Global Value @fullLiteral21_c85 = internal  __constant constant float 0x400704D380000000, align 4
+
+Global Value @fullLiteral22_c86 = internal  __constant constant float 0x40063AA5A0000000, align 4
+
+@fullLiteral94_c158 = internal  __constant constant float 0xBFF368C5C0000000, align 4
+
+Global Value @fullLiteral95_c159 = internal  __constant constant float 0x3FEC3BBC00000000, align 4
+
+Global Value @fullLiteral85_c149 = internal  __constant constant float 0x3FF05D1740000000, align 4
+
+Global Value @fullLiteral86_c150 = internal  __constant constant float 0xBFFB9229C0000000, align 4
+
+Global Value @fullLiteral87_c151 = internal  __constant constant float 0x3FD3881740000000, align 4
+
+Global Value @fullLiteral88_c152 = internal  __constant constant float fullLiteral82_c146 = internal  __constant constant float 0x3FE5E92100000000, align 4
+
+Global Value 0x3FFB9229C0000000, align 4
+
+Global Value @fullLiteral72_c136 = internal  __constant constant float 0x3FF31C71C0000000, align 4
+
+Global Value @fullLiteral78_c142 = internal  __constant constant float @fullLiteral73_c137 = internal  __constant constant float 0x0x3FF529DCC0000000, align 4
+
+3FF19999A0000000, align 4
+
+Global Value Global Value @fullLiteral74_c138 = internal  __constant constant float @0x3FFD1F4BA0000000, align 4
+
+fullLiteral79_c143 = internal  __constant constant float 0xBFE5E92100000000, align 4
+
+Global Value Global Value @fullLiteral75_c139 = internal @ __constant constant float fullLiteral80_c144 = internal 0xBFF529DCC0000000, align 4
+
+ __constant constant float Global Value 0x3FFE10F740000000, align 4
+
+Global Value @fullLiteral65_c129 = internal  __constant constant float 1.312500e+00, align 4
+@
+fullLiteral81_c145 = internal  __constant constant float Global Value 0x3FE5E92100000000, align 4
+
+Global Value @fullLiteral66_c130 = internal  __constant constant float 0x4003FCEAC0000000, align 4@
+fullLiteral71_c135
+ = Global Value internal  __constant constant float 0x3FF31C71C0000000, align 4
+
+Global Value @fullLiteral67_c131 = internal  __constant constant float 0x3FB6350CA0000000, align 4
+
+@Global Value fullLiteral72_c136 = internal  __constant constant float 0x3FF529DCC0000000, align 4
+
+Global Value @fullLiteral68_c132 = internal  __constant constant float 0xC003FCEAC0000000, align 4
+
+Global Value @fullLiteral73_c137 = internal  __constant constant float 0x3FFD1F4BA0000000, align 4
+
+@fullLiteral58_c122 = internal  __constant constant float Global Value 0x3FF76DB6E0000000, align 4
+
+Global Value @fullLiteral74_c138 = internal  __constant constant float @0xBFF529DCC0000000, align 4
+fullLiteral59_c123 = internal  __constant constant float 
+0x3FFE915880000000, align 4
+
+Global Value Global Value @fullLiteral64_c128 = internal  __constant constant float@ fullLiteral60_c124 = internal  __constant constant float 1.312500e+00, align 40xBFFFA5F440000000, align 4
+
+
+
+Global Value Global Value @fullLiteral65_c129 = internal  __constant constant float @0x4003FCEAC0000000, align 4
+
+fullLiteral61_c125 = internal  __constant constant float Global Value 0xBFFE915880000000, align 4
+
+Global Value @fullLiteral66_c130 = internal  __constant constant float 0x3FB6350CA0000000@, align 4
+fullLiteral51_c115 = internal  __constant 
+constant float 0x3FFAAAAAA0000000, align 4
+
+Global Value Global Value @@fullLiteral52_c116 = internal  __constant constant float fullLiteral67_c131 = internal  __constant constant float 0xBF45C615E0000000, align 4
+
+0xGlobal Value C003FCEAC0000000, align 4
+
+Global Value @fullLiteral53_c117 = internal  __constant constant float -3.000000e+00, align 4
+
+@fullLiteral57_c121 = internal  __constant constant float 0x3FF76DB6E0000000, align 4
+
+Global Value Global Value @fullLiteral54_c118 = internal  __constant constant float @0x3F45C615E0000000, align 4
+
+fullLiteral58_c122 = internal Global Value  __constant constant float 0x3FFE915880000000, align 4
+
+Global Value @fullLiteral44_c108 = internal  __constant constant float @0x3FFF333340000000, align 4fullLiteral59_c123
+ = internal  __constant constant float 
+0xBFFFA5F440000000, align 4
+
+Global Value Global Value @fullLiteral45_c109 = @internal fullLiteral60_c124 __constant  = internal  __constant constant float constant 0xBFFE915880000000, align 4
+float 
+0xC000B5EE00000000, align 4
+
+Global Value Global Value @fullLiteral50_c114 = internal  __constant constant float @0x3FFAAAAAA0000000, align 4
+
+fullLiteral46_c110 = Global Value internal  __constant constant float 0xC003EB2E60000000, align 4
+
+Global Value @fullLiteral47_c111 = internal  __constant constant float 0x4000B5EE00000000, align 4
+
+Global Value @fullLiteral37_c101 = internal  __constant constant float 2.375000e+00, align 4
+
+Global Value @fullLiteral38_c102 = internal  __constant constant float 0xC00B2AFE80000000, align 4
+
+Global Value @fullLiteral39_c103 = internal  __constant constant float 0xBFEB19C100000000, align 4
+
+Global Value @fullLiteral40_c104 = internal  __constant constant float 0x400B2AFE80000000, align 4
+
+Global Value @fullLiteral30_c94 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+
+Global Value @fullLiteral31_c95 = internal  __constant constant float 0xC00C8828E0000000, align 4
+
+Global Value @fullLiteral32_c96 = internal  __constant constant float 0x3FF28A3880000000, align 4
+
+Global Value @fullLiteral33_c97 = internal  __constant constant float@fullLiteral51_c115 = internal  __constant constant float 0xBF45C615E0000000, align 4
+
+Global Value @fullLiteral52_c116 = internal  __constant constant float -3.000000e+00, align 4
+
+Global Value @fullLiteral53_c117 = internal  __constant constant float 0x3F45C615E0000000, align 4
+
+Global Value  @fullLiteral43_c107 = internal  __constant constant float 0x3FFF333340000000, align 4
+
+Global Value @fullLiteral44_c108 = internal  __constant constant float 0xC000B5EE00000000, align 4
+
+Global Value @fullLiteral45_c109 = internal  __constant constant float 0xC003EB2E60000000, align 4
+
+Global Value @fullLiteral46_c110 = internal  __constant constant float 0x4000B5EE00000000, align 4
+
+Global Value @fullLiteral36_c100 = internal  __constant constant float 2.375000e+00, align 4
+
+Global Value @fullLiteral37_c101 = internal  __constant constant float 0xC00B2AFE80000000, align 4
+
+Global Value @fullLiteral38_c102 = internal  __constant constant float 0xBFEB19C100000000, align 4
+
+Global Value @fullLiteral39_c103 = internal  __constant constant float 0x400B2AFE80000000, align 4
+
+Global Value 0x400C8828E0000000, align 4
+
+Global Value @fullLiteral29_c93 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+
+Global Value @fullLiteral30_c94 = internal  __constant constant float 0xC00C8828E0000000, align 4
+
+Global Value @fullLiteral31_c95 = internal  __constant constant float 0x3FF28A3880000000, align 4
+
+Global Value @fullLiteral32_c96 = @internal  __constant fullLiteral6_c70constant float  = internal 0x400C8828E0000000, align 4
+ __constant 
+constant float Global Value 4.500000e+00, align 4
+
+Global Value @fullLiteral6_c70 = internal  __constant constant float 4.500000e+00, align 4
+
+Global Value @fullLiteral21_c85 = internal  __constant constant float 0xC0063AA5A0000000, align 4
+
+@Global Value fullLiteral20_c84 = internal  __constant constant float 0xC0063AA5A0000000, align 4
+
+Global Value @fullLiteral22_c86 = internal  __constant constant float @0x400704D380000000, align 4
+
+fullLiteral21_c85 = internal  __constant constant float 0x400704D380000000, align 4
+
+Global Value Global Value @fullLiteral23_c87 = internal  __constant @constant floatfullLiteral22_c86 = internal  __constant constant float 0x40063AA5A0000000, align 4
+ 
+0x40063AA5A0000000, align 4
+
+[13:31:08] [Render thread/INFO] (Minecraft) OpenAL initialized on device OpenAL Soft on Altavoces (Qualcomm(R) Aqstic(TM) Audio Adapter Device)
+[13:31:08] [Render thread/INFO] (Minecraft) Sound engine started
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[13:31:08] [Render thread/INFO] (Minecraft) Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[14:18:20] [Render thread/INFO] (Minecraft) Reloading ResourceManager: vanilla, vanilla, betterlight, fabric-advancement-api-v1, fabric-api, fabric-api-base, fabric-api-lookup-api-v1, fabric-biome-api-v1, fabric-block-api-v1, fabric-block-getter-api-v2, fabric-client-gametest-api-v1, fabric-command-api-v2, fabric-convention-tags-v2, fabric-crash-report-info-v1, fabric-creative-tab-api-v1, fabric-data-attachment-api-v1, fabric-data-generation-api-v1, fabric-debug-api-v1, fabric-dimensions-v1, fabric-entity-events-v1, fabric-events-interaction-v0, fabric-game-rule-api-v1, fabric-gametest-api-v1, fabric-item-api-v1, fabric-key-mapping-api-v1, fabric-lifecycle-events-v1, fabric-loot-api-v3, fabric-menu-api-v1, fabric-message-api-v1, fabric-model-loading-api-v1, fabric-networking-api-v1, fabric-object-builder-api-v1, fabric-particles-v1, fabric-permission-api-v1, fabric-recipe-api-v1, fabric-registry-sync-v0, fabric-renderer-api-v1, fabric-renderer-indigo, fabric-rendering-fluids-v1, fabric-rendering-v1, fabric-resource-conditions-api-v1, fabric-resource-loader-v0, fabric-resource-loader-v1, fabric-screen-api-v1, fabric-serialization-api-v1, fabric-sound-api-v1, fabric-tag-api-v1, fabric-transfer-api-v1, fabric-transitive-access-wideners-v1, fabricloader
+[14:18:20] [Worker-Main-12/INFO] (Minecraft) Found unifont_all_no_pua-17.0.01.hex, loading
+[14:18:20] [Worker-Main-17/INFO] (Minecraft) Found unifont_pua-17.0.01.hex, loading
+[14:18:20] [Worker-Main-12/INFO] (Minecraft) Found unifont_jp_patch-17.0.01.hex, loading
+Global Value @fullLiteral121_c185 = internal  __constant constant float 7.812500e-01, align 4
+
+Global Value @fullLiteral122_c186 = internal  __constant constant float 0xBFDF8142A0000000, align 4
+
+Global Value @fullLiteral123_c187 = internal  __constant constant float 0x3FB66DB0C0000000, align 4
+
+Global Value @fullLiteral17_c81 = internal  __constant constant float 8.750000e+00, align 4
+
+Global Value @fullLiteral18_c82 = internal  __constant constant float 0xBFF741CC60000000, align 4
+
+Global Value @fullLiteral19_c83 = internal  __constant constant float 0x400FF319C0000000, align 4
+
+Global Value @fullLiteral124_c188 = internal  __constant constant float 0x3FDF8142A0000000, align 4
+
+Global Value @fullLiteral20_c84 = internal  __constant constant float 0x3FF741CC60000000, align 4
+
+Global Value @fullLiteral114_c178 = internal  __constant constant float 0x3FEA222220000000, align 4
+
+Global Value @fullLiteral115_c179 = internal  __constant constant float 0x3F5141CF20000000, align 4
+
+Global Value @fullLiteral116_c180 = internal  __constant constant float 0x3FE7FFFE60000000, align 4
+
+Global Value @fullLiteral117_c181 = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+Global Value @fullLiteral107_c171 = internal  __constant constant float 0x3FEB6DB6E0000000, align 4
+
+Global Value @fullLiteral108_c172 = internal  __constant constant float 0x3FEF0C6040000000, align 4
+
+Global Value @fullLiteral109_c173 = internal  __constant constant float 0x3FCEFBE540000000, align 4
+
+Global Value @fullLiteral110_c174 = internal  __constant constant float 0xBFEF0C6040000000, align 4
+
+Global Value @fullLiteral100_c164 = internal  __constant constant float 0x3FECEC4EC0000000, align 4
+
+Global Value @fullLiteral101_c165 = internal  __constant constant float 0x3FE52AEBA0000000, align 4
+
+Global Value @fullLiteral102_c166 = internal  __constant constant float 0xBFF0F85520000000, align 4
+
+Global Value @fullLiteral103_c167 = internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+Global Value @fullLiteral93_c157 = internal  __constant constant float 0x3FEEAAAAA0000000, align 4
+
+Global Value @fullLiteral94_c158 = internal  __constant constant float 0xBFEC3BBC00000000, align 4
+
+Global Value @fullLiteral95_c159 = internal  __constant constant float 0xBFF368C5C0000000, align 4
+
+Global Value @fullLiteral96_c160 = internal  __constant constant float 0x3FEC3BBC00000000, align 4
+
+Global Value @fullLiteral86_c150 = internal  __constant constant float 0x3FF05D1740000000, align 4
+
+Global Value @fullLiteral87_c151 = internal  __constant constant float 0xBFFB9229C0000000, align 4
+
+Global Value @fullLiteral88_c152 = internal  __constant constant float 0x3FD3881740000000, align 4
+
+Global Value @fullLiteral89_c153 = internal  __constant constant float 0x3FFB9229C0000000, align 4
+
+Global Value @fullLiteral79_c143 = internal  __constant constant float 0x3FF19999A0000000, align 4
+
+Global Value @fullLiteral80_c144 = internal  __constant constant float 0xBFE5E92100000000, align 4
+
+Global Value @fullLiteral81_c145 = internal  __constant constant float 0x3FFE10F740000000, align 4
+
+Global Value @fullLiteral82_c146 = internal  __constant constant float 0x3FE5E92100000000, align 4
+
+Global Value @fullLiteral72_c136 = internal  __constant constant float 0x3FF31C71C0000000, align 4
+
+Global Value @fullLiteral73_c137 = internal  __constant constant float 0x3FF529DCC0000000, align 4
+
+Global Value @fullLiteral74_c138 = internal  __constant constant float 0x3FFD1F4BA0000000, align 4
+
+Global Value @fullLiteral75_c139 = internal  __constant constant float 0xBFF529DCC0000000, align 4
+
+Global Value @fullLiteral65_c129 = internal  __constant constant float 1.312500e+00, align 4
+
+Global Value Global Value @fullLiteral66_c130 = internal  __constant constant float 0x4003FCEAC0000000, align 4
+
+Global Value @fullLiteral113_c177 = internal  __constant constant float 0x3FEA222220000000, align 4
+
+Global Value @fullLiteral114_c178 = internal  __constant constant float @0xfullLiteral67_c131 = internal  __constant constant float 3F5141CF200000000x3FB6350CA0000000, align 4
+
+, align 4
+
+Global Value Global Value @fullLiteral115_c179 = @internal  __constant constant fullLiteral68_c132float  = internal Global Value  __constant constant 0xfloat 3FE7FFFE60000000, align 4
+0xC003FCEAC0000000
+, align 4
+
+Global Value Global Value @fullLiteral113_c177 = internal  __constant constant float 0x@@fullLiteral16_c80 = internal  __constant constant fullLiteral58_c122float =  internal 8.750000e+00 __constant , align constant float 40x
+3FF76DB6E0000000
+, align Global Value 4
+
+3FEA222220000000Global Value , align 4
+
+Global Value @fullLiteral17_c81 = internal  __constant constant float 0xBFF741CC60000000, align 4
+@
+fullLiteral59_c123 = internal  __constant constant float Global Value @0x3FFE915880000000, align 4
+
+fullLiteral114_c178Global Value  = internal  __constant constant float @fullLiteral18_c82 = internal  __constant constant float 0x0x400FF319C0000000, align 4@
+
+fullLiteral60_c124 = internal  __constant constant float 3F5141CF200000000xGlobal Value BFFFA5F440000000, align 4
+
+, align 4
+
+Global Value Global Value @fullLiteral116_c180 = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+@Global Value fullLiteral115_c179 = @fullLiteral61_c125 = internal  __constant constant float internal 0xBFFE915880000000, align @4
+fullLiteral19_c83 = internal 
+ __constant constant Global Value float  __constant 0x3FF741CC60000000, align 4
+
+constant floatGlobal Value  0x3FE7FFFE60000000@fullLiteral51_c115 = internal  __constant constant float , align 0x@3FFAAAAAA0000000fullLiteral106_c170 = internal  __constant constant float, align 4
+ 
+0xGlobal Value 3FEB6DB6E0000000, align 4
+4
+
+Global Value 
+Global Value @fullLiteral52_c116 = internal  __constant constant float @0xBF45C615E0000000, align 4
+fullLiteral107_c171 = internal  __constant constant float 
+0xGlobal Value 3FEF0C6040000000, align 4
+
+@Global Value fullLiteral16_c80 = internal  __constant constant float 8.750000e+00, align 4
+@fullLiteral53_c117 = @internal fullLiteral108_c172 = internal  __constant  __constant constant float constant -3.000000e+00float, align  4
+0x
+3FCEFBE540000000, align 4
+
+
+Global Value Global Value Global Value @fullLiteral17_c81@fullLiteral109_c173 = internal  __constant constant float@ fullLiteral54_c118 = 0xBFEF0C6040000000, align 4
+internal  __constant constant float 
+0x3F45C615E0000000, align 4
+Global Value 
+Global Value @fullLiteral99_c163 = internal  __constant constant float @0x3FECEC4EC0000000, align 4
+
+fullLiteral44_c108 = internal  __constant constant float Global Value 0x3FFF333340000000, align 4
+
+Global Value @fullLiteral100_c164 = internal  __constant constant float 0x3FE52AEBA0000000@, align 4
+
+fullLiteral45_c109Global Value  = internal  __constant constant float 0xC000B5EE00000000, align 4
+
+Global Value @fullLiteral101_c165 = internal  __constant constant float 0xBFF0F85520000000, align 4
+
+@fullLiteral46_c110 = internal  __constant constant float Global Value 0xC003EB2E60000000, align 4
+
+Global Value @fullLiteral102_c166 = internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+@fullLiteral47_c111 = internal  __constant constant float Global Value 0x4000B5EE00000000, align 4
+
+Global Value @fullLiteral92_c156 = internal  __constant constant float 0x3FEEAAAAA0000000, align 4
+
+@Global Value fullLiteral37_c101 = internal  __constant constant float 2.375000e+00, align 4
+
+Global Value @fullLiteral93_c157 = internal  __constant constant float 0xBFEC3BBC00000000, align 4
+@
+fullLiteral38_c102 = internal  __constant constant float 0xC00B2AFE80000000, align 4
+
+Global Value  = internal  __constant constant float Global Value 0xBFF741CC60000000, align 4
+
+Global Value @@fullLiteral18_c82 = internal  __constant constant float fullLiteral39_c1030x = internal  __constant @constant fullLiteral94_c158float  = 0xBFEB19C100000000, align 4
+
+internal  __constant constant 400FF319C0000000, align 4Global Value float 
+
+0xBFF368C5C0000000, align 4
+
+Global Value @fullLiteral116_c180Global Value  = internal  __constant constant float 0xBF5141CF20000000, align 4
+
+@fullLiteral40_c104Global Value  = internal  __constant constant float@fullLiteral95_c159  = 0x400B2AFE80000000, align 4
+
+internal @fullLiteral19_c83 = internal  __constant Global Value  __constant constant float constant float 0x3FEC3BBC00000000, align 4
+
+0x3FF741CC60000000, align 4
+
+Global Value Global Value @fullLiteral30_c94 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+
+Global Value @fullLiteral85_c149 = internal  __constant constant float @0xfullLiteral31_c95 = internal  __constant constant float 3FF05D1740000000, align 0xC00C8828E0000000, align 4
+
+4Global Value 
+@
+fullLiteral106_c170Global Value  = internal  __constant constant float 0x3FEB6DB6E0000000, align 4
+@
+fullLiteral32_c96 = internal  __constant constant float@ fullLiteral86_c1500x = internal  __constant 3FF28A3880000000constant float , align 4
+
+0xBFFB9229C0000000, align 4
+
+Global Value Global Value Global Value @fullLiteral87_c151 = internal  __constant constant float 0x3FD3881740000000, align 4
+@
+fullLiteral33_c97 = internal  __constant constant float @0x400C8828E0000000, align Global Value 4
+
+fullLiteral107_c171 = Global Value internal  __constant constant float 0x3FEF0C6040000000, align 4
+@fullLiteral88_c152 = internal  __constant constant float 
+0x@3FFB9229C0000000, align 4
+fullLiteral6_c70 = internal  __constant 
+constant float Global Value 4.500000e+00, align 4
+Global Value 
+Global Value @fullLiteral78_c142 = internal  __constant constant float 0x3FF19999A0000000@fullLiteral108_c172@, align fullLiteral21_c85 = internal  __constant constant float 4
+
+0xGlobal Value C0063AA5A0000000, align 4
+
+ = Global Value internal  __constant constant float 0x@fullLiteral79_c143 = internal  __constant constant float 3FCEFBE5400000000x@BFE5E92100000000, align 4
+
+fullLiteral22_c86Global Value  = internal  __constant constant float , align 0x400704D380000000, align 4
+
+4
+
+@Global Value fullLiteral80_c144 = internal  __constant constant float 0x3FFE10F740000000, align 4Global Value 
+
+@fullLiteral23_c87 = internal  __constant constant float Global Value 0x40063AA5A0000000, align 4
+@
+fullLiteral109_c173 = internal  __constant constant float 0x@fullLiteral81_c145 = internal  __constant constant float BFEF0C60400000000x3FE5E92100000000, align 4
+
+, align Global Value 4
+
+Global Value @fullLiteral71_c135 = internal  __constant constant float @0x3FF31C71C0000000, align 4
+
+fullLiteral99_c163Global Value  = internal  __constant constant float 0x3FECEC4EC0000000, align 4
+
+Global Value @fullLiteral72_c136 = internal  __constant constant float 0x3FF529DCC0000000, align 4
+
+Global Value @fullLiteral100_c164 = internal  __constant constant float 0x3FE52AEBA0000000, align 4
+
+Global Value @fullLiteral73_c137 = internal  __constant constant float 0x3FFD1F4BA0000000, align 4
+
+@fullLiteral101_c165 = Global Value internal  __constant constant float 0xBFF0F85520000000, align 4
+
+@fullLiteral74_c138Global Value  = internal  __constant constant float 0xBFF529DCC0000000, align 4
+
+Global Value @fullLiteral102_c166 = internal  __constant constant float 0xBFE52AEBA0000000, align 4
+
+@fullLiteral64_c128 = internal  __constant constant float Global Value 1.312500e+00, align 4
+
+Global Value @fullLiteral92_c156 = internal  __constant constant float @fullLiteral65_c129 = internal  __constant constant float 0x0x4003FCEAC0000000, align 4
+
+3FEEAAAAA0000000Global Value , align 4
+
+Global Value @fullLiteral66_c130 = internal  __constant constant float 0x@fullLiteral93_c1573FB6350CA0000000, align 4
+
+ = internal  __constant constant float Global Value 0xBFEC3BBC00000000, align 4
+
+Global Value @fullLiteral67_c131 = internal  __constant constant float 0xC003FCEAC0000000, align 4
+
+@Global Value fullLiteral94_c158 = internal  __constant constant float 0xBFF368C5C0000000, align 4
+
+@Global Value fullLiteral57_c121 = internal  __constant constant float 0x3FF76DB6E0000000, align 4
+
+Global Value @fullLiteral95_c159 = internal  __constant constant float 0x3FEC3BBC00000000, align 4
+
+@fullLiteral58_c122 = internal  __constant constant float Global Value 0x3FFE915880000000, align 4
+
+Global Value @fullLiteral85_c149 = internal  __constant constant float @fullLiteral59_c123 = internal  __constant constant float 0x0x3FF05D1740000000, align 4
+
+BFFFA5F440000000Global Value , align 4
+
+Global Value @fullLiteral86_c150 = internal  __constant constant float 0xBFFB9229C0000000, align 4
+
+Global Value @fullLiteral60_c124 = internal  __constant constant float 0xBFFE915880000000, align 4
+
+Global Value @fullLiteral87_c151 = internal  __constant constant float 0x3FD3881740000000, align 4@
+
+fullLiteral50_c114 = internal  __constant constant float 0x3FFAAAAAA0000000, align 4
+
+Global Value Global Value @fullLiteral51_c115 = internal  __constant constant float 0x@fullLiteral88_c152BF45C615E0000000 = internal  __constant constant float , align 0x4
+
+3FFB9229C0000000Global Value , align 4
+
+Global Value @fullLiteral52_c116 = internal  __constant constant @fullLiteral78_c142 = internal  __constant constant float float0x3FF19999A0000000, align 4
+
+ Global Value -3.000000e+00, align 4
+
+Global Value @fullLiteral79_c143 = internal  __constant constant float 0xBFE5E92100000000, align 4
+
+Global Value @fullLiteral53_c117 = internal  __constant constant float 0x3F45C615E0000000, align 4
+
+@fullLiteral80_c144 = internal  __constant constant float Global Value 0x3FFE10F740000000, align 4
+
+Global Value @fullLiteral43_c107 = internal  __constant constant float 0x3FFF333340000000, align 4
+
+Global Value @fullLiteral81_c145 = internal  __constant constant float 0x3FE5E92100000000, align 4
+
+Global Value @fullLiteral44_c108 = internal  __constant constant float 0xC000B5EE00000000, align 4
+
+Global Value @fullLiteral71_c135 = internal  __constant constant float 0x3FF31C71C0000000, align @fullLiteral45_c109 = internal  __constant constant float 40xC003EB2E60000000, align 4
+
+
+
+Global Value Global Value @fullLiteral72_c136 = internal  __constant constant float 0x3FF529DCC0000000, align @fullLiteral46_c1104
+
+ = Global Value internal @fullLiteral73_c137 = internal  __constant constant float  __constant 0x3FFD1F4BA0000000, align 4
+
+constant float 0x4000B5EE00000000Global Value , align 4
+
+Global Value @fullLiteral74_c138 = internal  __constant constant float @fullLiteral36_c100 = internal  __constant constant float 0xBFF529DCC0000000, align 4
+
+2.375000e+00Global Value , align 4
+
+Global Value @fullLiteral64_c128 = internal  __constant @fullLiteral37_c101 = internal  __constant constant float constant 0xC00B2AFE80000000, align 4
+
+floatGlobal Value  1.312500e+00, align 4
+
+Global Value @fullLiteral38_c102 = internal  __constant constant float @fullLiteral65_c129 = internal  __constant constant float 0x0xBFEB19C100000000, align 4
+
+4003FCEAC0000000, align 4
+
+Global Value Global Value @fullLiteral66_c130@fullLiteral39_c103 = internal  __constant constant float  = 0xinternal  __constant constant float 400B2AFE80000000, align 4
+
+0xGlobal Value 3FB6350CA0000000, align 4
+
+Global Value @fullLiteral29_c93 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+@fullLiteral67_c131
+ = Global Value internal  __constant constant float 0xC003FCEAC0000000, align 4
+
+Global Value @fullLiteral30_c94 = internal  __constant constant float 0xC00C8828E0000000, align @fullLiteral57_c121 = internal  __constant constant float 40x
+
+3FF76DB6E0000000Global Value , align 4
+
+Global Value @fullLiteral31_c95 = internal  __constant @fullLiteral58_c122 = internal  __constant constant float constant 0xfloat 3FFE9158800000000x, align 4
+
+3FF28A3880000000Global Value , align 4
+
+Global Value @fullLiteral59_c123 = internal  __constant constant float 0xBFFFA5F440000000, align 4
+
+@fullLiteral32_c96 = internal  __constant Global Value constant float 0x400C8828E0000000, align 4
+
+Global Value @fullLiteral60_c124 = internal  __constant constant float 0xBFFE915880000000, align 4
+
+@Global Value fullLiteral6_c70 = internal  __constant constant float 4.500000e+00, align 4
+
+Global Value @fullLiteral50_c114 = internal  __constant constant float 0x3FFAAAAAA0000000, align 4
+
+@Global Value fullLiteral20_c84 = internal  __constant constant float 0xC0063AA5A0000000, align 4
+@fullLiteral51_c115 = internal  __constant constant float 
+0xGlobal Value BF45C615E0000000, align 4
+
+Global Value @fullLiteral21_c85 = internal  __constant constant float@fullLiteral52_c116  = 0x400704D380000000, align 4
+
+internal  __constant constant float -3.000000e+00, align 4
+Global Value 
+Global Value @fullLiteral22_c86 = internal  __constant constant float@fullLiteral53_c117 = internal  __constant constant float  0x3F45C615E00000000x40063AA5A0000000, align 4
+
+, align Global Value 4
+
+@fullLiteral43_c107 = internal  __constant constant float 0x3FFF333340000000, align 4
+
+Global Value @fullLiteral44_c108 = internal  __constant constant float 0xC000B5EE00000000, align 4
+
+Global Value @fullLiteral45_c109 = internal  __constant constant float 0xC003EB2E60000000, align 4
+
+Global Value @fullLiteral46_c110 = internal  __constant constant float 0x4000B5EE00000000, align 4
+
+Global Value @fullLiteral36_c100 = internal  __constant constant float 2.375000e+00, align 4
+
+Global Value @fullLiteral37_c101 = internal  __constant constant float 0xC00B2AFE80000000, align 4
+
+Global Value @fullLiteral38_c102 = internal  __constant constant float 0xBFEB19C100000000, align 4
+
+Global Value @fullLiteral39_c103 = internal  __constant constant float 0x400B2AFE80000000, align 4
+
+Global Value @fullLiteral29_c93 = internal  __constant constant float 0x4008AAAAA0000000, align 4
+
+Global Value @fullLiteral30_c94 = internal  __constant constant float 0xC00C8828E0000000, align 4
+
+Global Value @fullLiteral31_c95 = internal  __constant constant float 0x3FF28A3880000000, align 4
+
+Global Value @fullLiteral32_c96 = internal  __constant constant float 0x400C8828E0000000, align 4
+
+Global Value @fullLiteral6_c70 = internal  __constant constant float 4.500000e+00, align 4
+
+Global Value @fullLiteral20_c84 = internal  __constant constant float 0xC0063AA5A0000000, align 4
+
+Global Value @fullLiteral21_c85 = internal  __constant constant float 0x400704D380000000, align 4
+
+Global Value @fullLiteral22_c86 = internal  __constant constant float 0x40063AA5A0000000, align 4
+
+[14:18:21] [Render thread/INFO] (Minecraft) OpenAL initialized on device OpenAL Soft on Altavoces (Qualcomm(R) Aqstic(TM) Audio Adapter Device)
+[14:18:21] [Render thread/INFO] (Minecraft) Sound engine started
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 256x128x0 minecraft:textures/atlas/celestials.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 128x128x0 minecraft:textures/atlas/decorated_pot.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 512x256x0 minecraft:textures/atlas/paintings.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/shield_patterns.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/banner_patterns.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 2048x2048x4 minecraft:textures/atlas/blocks.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 1024x512x0 minecraft:textures/atlas/items.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 1024x1024x0 minecraft:textures/atlas/gui.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 128x64x0 minecraft:textures/atlas/map_decorations.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 512x512x0 minecraft:textures/atlas/chest.png-atlas
+[14:18:21] [Render thread/INFO] (Minecraft) Created: 512x512x0 minecraft:textures/atlas/shulker_boxes.png-atlas
+[14:18:30] [Download-13/INFO] (Minecraft) Could not authorize you against Realms server: java.lang.RuntimeException: Failed to parse into SignedJWT: FabricMC
+[14:19:34] [Worker-Main-23/INFO] (Minecraft) Loaded 1881 advancements
+[14:21:39] [Render thread/WARN] (Minecraft) Couldn't acquire next surface texture with config Optional[Configuration[width=2496, height=1558, presentMode=FIFO]]
+
+com.mojang.renderpearl.api.device.SurfaceException: com.mojang.renderpearl.api.device.SurfaceException: Failed to present image, swapchain out of date
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.acquireNextTexture(VulkanGpuSurface.java:270)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.acquireNextTexture(FrontendGpuSurface.java:79)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1328)
+	at knot//net.minecraft.client.Minecraft.runTick(Minecraft.java:1277)
+	at knot//net.minecraft.client.Minecraft.run(Minecraft.java:923)
+	at knot//net.minecraft.client.main.Main.main(Main.java:277)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:517)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+	at net.fabricmc.devlaunchinjector.Main.main(Main.java:86)
+Caused by: com.mojang.renderpearl.api.device.SurfaceException: Failed to present image, swapchain out of date
+	at knot//com.mojang.renderpearl.backend.vulkan.VulkanGpuSurface.present(VulkanGpuSurface.java:421)
+	at knot//com.mojang.renderpearl.frontend.FrontendGpuSurface.present(FrontendGpuSurface.java:128)
+	at knot//net.minecraft.client.Minecraft.renderFrame(Minecraft.java:1425)
+	... 7 more
+[14:21:54] [Render thread/INFO] (Minecraft) Found new data pack fabric-convention-tags-v2, loading it automatically
+[14:21:54] [Render thread/INFO] (Minecraft) Found new data pack fabric-gametest-api-v1, loading it automatically
+[14:21:54] [Worker-Main-42/INFO] (Minecraft) Loaded 1881 advancements
+[14:21:55] [Render thread/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 68 new biomes in 749.9 μs
+[14:21:55] [Server thread/INFO] (Minecraft) Starting integrated minecraft server version 26.4 Snapshot 5
+[14:21:55] [Server thread/INFO] (Minecraft) Generating keypair
+[14:21:55] [Server thread/INFO] (Minecraft) Loading 0 persistent chunks...
+[14:21:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:21:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:21:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:21:56] [Server thread/INFO] (Minecraft) Loading 49 chunks for player spawn...
+[14:21:56] [Server thread/INFO] (Minecraft) Preparando zona de aparición: 16 %
+[14:21:56] [Server thread/INFO] (Minecraft) Preparando zona de aparición: 16 %
+[14:21:56] [Server thread/INFO] (Minecraft) Preparando zona de aparición: 16 %
+[14:21:56] [Server thread/INFO] (Minecraft) Time elapsed: 1106 ms
+[14:21:56] [Server thread/INFO] (Minecraft) Player194[local:E:67d8e819] logged in with entity id 1 at (-6.9527044346899105, -54.84239019660064, -12.904740402814108)
+[14:21:57] [Server thread/INFO] (Minecraft) System chat: Player194 se ha unido a la partida
+[14:21:57] [Server thread/INFO] (Minecraft) Changing view distance to 16, from 10
+[14:21:57] [Server thread/INFO] (Minecraft) Changing simulation distance to 12, from 0
+[14:21:57] [Render thread/INFO] (Minecraft) Loaded 32 advancements
+[14:21:57] [Render thread/WARN] (Minecraft) Requested post effect does not exist: minecraft:end_of_frame
+[14:21:57] [Render thread/INFO] (Minecraft) Resizing Dynamic Transforms UBO, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[14:21:57] [Render thread/INFO] (Minecraft) Resizing Dynamic Transforms UBO, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[14:21:57] [Render thread/INFO] (Minecraft) Resizing Dynamic Transforms UBO, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 2 reached during a single frame. New capacity will be 4.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 4 reached during a single frame. New capacity will be 8.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 8 reached during a single frame. New capacity will be 16.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 16 reached during a single frame. New capacity will be 32.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 16 reached during a single frame. New capacity will be 32.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 32 reached during a single frame. New capacity will be 64.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 32 reached during a single frame. New capacity will be 64.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 64 reached during a single frame. New capacity will be 128.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 64 reached during a single frame. New capacity will be 128.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 128 reached during a single frame. New capacity will be 256.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 128 reached during a single frame. New capacity will be 256.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Command Buffer, capacity limit of 256 reached during a single frame. New capacity will be 512.
+[14:21:58] [Render thread/INFO] (Minecraft) Resizing Chunk Sections Instanced, capacity limit of 256 reached during a single frame. New capacity will be 512.
+[14:22:15] [Server thread/INFO] (Minecraft) System chat: [Player194: Modo de juego cambiado a Modo espectador]
+[14:22:15] [Render thread/INFO] (Minecraft) [System] [CHAT] Modo de juego cambiado a Modo espectador
+[14:22:28] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[14:22:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:28] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:29] [Server thread/INFO] (Minecraft) Stopping server
+[14:22:29] [Server thread/INFO] (Minecraft) Saving players
+[14:22:29] [Server thread/INFO] (Minecraft) Saving worlds
+[14:22:29] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:29] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:29] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:37] [Worker-Main-41/INFO] (Minecraft) Loaded 1881 advancements
+[14:22:37] [World Upgrader #0/INFO] (Minecraft) Upgrading entities
+[14:22:37] [World Upgrader #0/INFO] (Minecraft) Upgrading POIs
+[14:22:37] [World Upgrader #0/INFO] (Minecraft) Upgrading blocks
+[14:22:37] [World Upgrader #0/INFO] (Minecraft) World optimization finished after 0 seconds
+[14:22:39] [Worker-Main-34/INFO] (Minecraft) Loaded 1881 advancements
+[14:22:39] [Render thread/INFO] (BiomeModificationImpl) Applied 0 biome modifications to 0 of 68 new biomes in 228.6 μs
+[14:22:39] [Server thread/INFO] (Minecraft) Starting integrated minecraft server version 26.4 Snapshot 5
+[14:22:39] [Server thread/INFO] (Minecraft) Generating keypair
+[14:22:39] [Server thread/INFO] (Minecraft) Loading 0 persistent chunks...
+[14:22:39] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:39] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:39] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:39] [Server thread/INFO] (Minecraft) Loading 49 chunks for player spawn...
+[14:22:39] [Server thread/INFO] (Minecraft) Preparando zona de aparición: 16 %
+[14:22:39] [Server thread/INFO] (Minecraft) Time elapsed: 232 ms
+[14:22:40] [Server thread/INFO] (Minecraft) Player194[local:E:c8f211ac] logged in with entity id 35 at (70.10628997694307, -47.72330056321582, 38.018628853367005)
+[14:22:40] [Server thread/INFO] (Minecraft) System chat: Player194 se ha unido a la partida
+[14:22:40] [Server thread/INFO] (Minecraft) Changing view distance to 16, from 10
+[14:22:40] [Render thread/INFO] (Minecraft) Loaded 32 advancements
+[14:22:40] [Server thread/INFO] (Minecraft) Changing simulation distance to 12, from 0
+[14:22:43] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[14:22:43] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:43] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:43] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:55] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[14:22:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:55] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:58] [Server thread/INFO] (Minecraft) Saving and pausing game...
+[14:22:58] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:58] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:58] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:22:59] [Server thread/INFO] (Minecraft) Stopping server
+[14:22:59] [Server thread/INFO] (Minecraft) Saving players
+[14:22:59] [Server thread/INFO] (Minecraft) Saving worlds
+[14:22:59] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:overworld
+[14:22:59] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_nether
+[14:22:59] [Server thread/INFO] (Minecraft) Saving chunks for level 'ServerLevel[unifiedlight tests]'/minecraft:the_end
+[14:23:02] [Render thread/INFO] (Minecraft) Stopping!
+
+BUILD SUCCESSFUL in 52m 37s
+8 actionable tasks: 5 executed, 3 up-to-date
+Configuration cache entry stored.

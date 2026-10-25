@@ -1,0 +1,30 @@
+{
+	"schemaVersion": 1,
+	"id": "betterlight",
+	"version": "${version}",
+	"name": "Betterlight",
+	"description": "Smooth, unified lighting for terrain, fluids, entities and block entities.",
+	"authors": ["Wifft"],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": ["dev.wifft.betterlight.Betterlight"],
+		"client": ["dev.wifft.betterlight.BetterlightClient"]
+	},
+	"mixins": [
+		"betterlight.mixins.json",
+		{
+			"config": "betterlight.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.4-",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

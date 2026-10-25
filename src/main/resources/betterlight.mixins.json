@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"package": "dev.wifft.betterlight.mixin",
+	"compatibilityLevel": "JAVA_25",
+	"mixins": [
+		"BlockLightEngineMixin",
+		"LevelLightEngineMixin",
+		"LightEngineMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}

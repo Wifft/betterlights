@@ -1,0 +1,39 @@
+{
+	"required": true,
+	"package": "dev.wifft.betterlight.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"BlockEntityRenderDispatcherMixin",
+		"BlockEntityRenderStateMixin",
+		"BlockModelFeatureRendererMixin",
+		"BlockModelLighterMixin",
+		"BlockModelSubmitMixin",
+		"ClientLevelMixin",
+		"CustomFeatureRendererMixin",
+		"CustomSubmitMixin",
+		"EntityRendererMixin",
+		"FluidRendererMixin",
+		"IndigoAoCalculatorMixin",
+		"IndigoBlockRendererMixin",
+		"IndigoFlatLighterMixin",
+		"IndigoQuadViewMixin",
+		"ItemFeatureRendererMixin",
+		"ItemFrameRendererMixin",
+		"ItemFrameRenderStateMixin",
+		"ItemSubmitMixin",
+		"LightingMixin",
+		"ModelFeatureRendererMixin",
+		"ModelSubmitMixin",
+		"PaintingRendererMixin",
+		"RenderPipelinesMixin",
+		"VersionLabelMixin",
+		"VertexConsumerMixin",
+		"VideoSettingsScreenMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
+	}
+}
