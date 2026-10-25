@@ -21,6 +21,7 @@
 		"ItemFrameRendererMixin",
 		"ItemFrameRenderStateMixin",
 		"ItemSubmitMixin",
+		"LightCellCacheHolderMixin",
 		"LightingMixin",
 		"ModelFeatureRendererMixin",
 		"ModelSubmitMixin",

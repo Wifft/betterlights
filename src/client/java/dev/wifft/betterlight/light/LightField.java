@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndLightGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
@@ -23,8 +24,12 @@ public record LightField(int[] cells, float originX, float originY, float origin
 		current = field;
 	}
 
-	public static LightField capture(final BlockAndLightGetter level, final BlockPos pos, final Vec3 cameraPos, final int fallback) {
-		return of(captureCells(level, pos), pos, cameraPos, fallback);
+	// Cells around pos, captured at most once per game tick for the object owning the cache
+	public static int[] cachedCells(final Level level, final BlockPos pos, final LightCellCache cache) {
+		long gameTime = level.getGameTime();
+		long key = pos.asLong();
+		int[] cells = cache.get(gameTime, key, 0);
+		return cells != null ? cells : cache.put(gameTime, key, 0, captureCells(level, pos));
 	}
 
 	// Cells captured during extraction (world space), turned into a camera-relative field at submit time with of(...)

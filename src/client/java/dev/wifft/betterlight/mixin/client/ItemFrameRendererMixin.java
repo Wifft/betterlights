@@ -3,12 +3,14 @@ package dev.wifft.betterlight.mixin.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.wifft.betterlight.config.BetterlightConfig;
 import dev.wifft.betterlight.duck.ItemFrameLightCells;
+import dev.wifft.betterlight.duck.LightCellCacheHolder;
 import dev.wifft.betterlight.light.LightField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,7 +32,8 @@ public abstract class ItemFrameRendererMixin {
 	private void betterlight$captureLightCells(ItemFrame entity, ItemFrameRenderState state, float partialTicks, CallbackInfo ci) {
 		ItemFrameLightCells cells = (ItemFrameLightCells) state;
 		if (!state.isGlowFrame && BetterlightConfig.smoothPaintingsFrames && Minecraft.getInstance().options.ambientOcclusion().get()) {
-			cells.betterlight$setLightCells(LightField.captureCells(entity.level(), entity.blockPosition()), entity.blockPosition());
+			BlockPos pos = entity.blockPosition();
+			cells.betterlight$setLightCells(LightField.cachedCells(entity.level(), pos, LightCellCacheHolder.of(entity)), pos);
 		} else {
 			cells.betterlight$setLightCells(null, cells.betterlight$getLightOrigin());
 		}

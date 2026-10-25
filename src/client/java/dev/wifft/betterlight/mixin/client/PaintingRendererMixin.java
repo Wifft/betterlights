@@ -3,6 +3,8 @@ package dev.wifft.betterlight.mixin.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import dev.wifft.betterlight.config.BetterlightConfig;
+import dev.wifft.betterlight.duck.LightCellCacheHolder;
+import dev.wifft.betterlight.light.LightCellCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.PaintingRenderer;
@@ -51,10 +53,22 @@ public abstract class PaintingRendererMixin {
 		Direction direction = state.direction;
 		int width = variant.width();
 		int height = variant.height();
+		Level level = entity.level();
+		// The ring depends on the block, the facing and the size; reused for the rest of the tick
+		LightCellCache cache = LightCellCacheHolder.of(entity);
+		long gameTime = level.getGameTime();
+		long key = entity.blockPosition().asLong();
+		int extra = direction.ordinal() << 16 | width << 8 | height;
+		int[] cached = cache.get(gameTime, key, extra);
+		if (cached != null) {
+			state.lightCoordsPerBlock = cached;
+			return;
+		}
+
 		int[] cells = new int[(width + 2) * (height + 2)];
 		float offsetX = -width / 2.0F;
 		float offsetY = -height / 2.0F;
-		Level level = entity.level();
+		BlockPos.MutableBlockPos samplePos = new BlockPos.MutableBlockPos();
 
 		// Same cell positions as vanilla, plus the ring of cells around the painting
 		for (int segmentY = -1; segmentY <= height; segmentY++) {
@@ -73,11 +87,11 @@ public abstract class PaintingRendererMixin {
 					}
 				}
 
-				cells[segmentX + 1 + (segmentY + 1) * (width + 2)] = LightCoordsUtil.getLightCoords(level, new BlockPos(x, y, z));
+				cells[segmentX + 1 + (segmentY + 1) * (width + 2)] = LightCoordsUtil.getLightCoords(level, samplePos.set(x, y, z));
 			}
 		}
 
-		state.lightCoordsPerBlock = cells;
+		state.lightCoordsPerBlock = cache.put(gameTime, key, extra, cells);
 	}
 
 	@Unique

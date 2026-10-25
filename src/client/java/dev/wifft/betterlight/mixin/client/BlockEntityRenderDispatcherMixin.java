@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.wifft.betterlight.config.BetterlightConfig;
+import dev.wifft.betterlight.duck.LightCellCacheHolder;
 import dev.wifft.betterlight.duck.LightFieldHolder;
 import dev.wifft.betterlight.light.LightField;
 import net.minecraft.client.Minecraft;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -32,9 +34,9 @@ public abstract class BlockEntityRenderDispatcherMixin {
 		@Nullable BlockEntityRenderState state, @Local(argsOnly = true) BlockEntity blockEntity
 	) {
 		if (state != null && BetterlightConfig.blockEntityLightField && Minecraft.getInstance().options.ambientOcclusion().get()) {
-			((LightFieldHolder) state).betterlight$setLightField(
-				LightField.capture(blockEntity.getLevel(), blockEntity.getBlockPos(), this.cameraPos, state.lightCoords)
-			);
+			BlockPos pos = blockEntity.getBlockPos();
+			int[] cells = LightField.cachedCells(blockEntity.getLevel(), pos, LightCellCacheHolder.of(blockEntity));
+			((LightFieldHolder) state).betterlight$setLightField(LightField.of(cells, pos, this.cameraPos, state.lightCoords));
 		}
 		return state;
 	}
