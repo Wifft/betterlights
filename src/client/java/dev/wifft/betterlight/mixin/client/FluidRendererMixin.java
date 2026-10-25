@@ -34,6 +34,8 @@ public abstract class FluidRendererMixin {
 
 	@Unique
 	private final int[] betterlight$lightCache = new int[27];
+	@Unique
+	private final BlockPos.MutableBlockPos betterlight$samplePos = new BlockPos.MutableBlockPos();
 	// Lights of the 4 vertices of the next addFace call, in its vertex order
 	@Unique
 	private final int[] betterlight$cornerLights = new int[4];
@@ -207,7 +209,7 @@ public abstract class FluidRendererMixin {
 		int index = (dx + 1) * 9 + (dy + 1) * 3 + (dz + 1);
 		int light = this.betterlight$lightCache[index];
 		if (light == -1) {
-			light = this.getLightCoords(level, pos.offset(dx, dy, dz));
+			light = this.getLightCoords(level, this.betterlight$samplePos.setWithOffset(pos, dx, dy, dz));
 			this.betterlight$lightCache[index] = light;
 		}
 		return light;
