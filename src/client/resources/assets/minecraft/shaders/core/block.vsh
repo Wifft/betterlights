@@ -29,7 +29,7 @@ void main() {
     sphericalVertexDistance = fog_spherical_distance(pos);
     cylindricalVertexDistance = fog_cylindrical_distance(pos);
     // Unified lighting: directional shading from the vertex normal (was baked into Color on the CPU)
-    vec4 shadedColor = minecraft_unified_light(Normal, Color, true);
+    vec4 shadedColor = minecraft_terrain_light(Normal, Color);
     #ifndef OIT_ALPHA_ONLY
     vertexColor = shadedColor * sample_lightmap(Sampler2, UV2);
     #else

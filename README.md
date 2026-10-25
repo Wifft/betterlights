@@ -4,9 +4,9 @@ Mod de Fabric para Minecraft 26.4-snapshot-5 que unifica la iluminación:
 - Luz suave en fluidos, en modelos sin oclusión ambiental (raíles, plantas, carteles…) y en bloques que emiten luz (portal del Nether).
 - Luz por vértice en bloques con entidad, marcos y cuadros, y luz interpolada en entidades.
 - Hornos y calabazas de Halloween encendidos que solo iluminan por delante.
-- Sombreado por caras hecho en el shader, con tres modelos de luz: mixto, por caras y dos luces.
+- Sombreado por caras de los bloques hecho en el shader; las entidades y los objetos mantienen las dos luces de vanilla.
 
-Las opciones están en Opciones → Vídeo → Betterlight… y se guardan en `config/betterlight.properties`.
+Las opciones están en Opciones → Vídeo, en el apartado Betterlight, y se guardan en `config/betterlight.properties`.
 
 ## Compilar y probar
 
@@ -30,7 +30,7 @@ export JAVA_HOME=/c/Users/wifft/.jdks/jdk-25.0.4.1+1
 1. Cambia `minecraft_version`, `loader_version`, `loom_version` y `fabric_api_version` en `gradle.properties`. Las versiones válidas están en https://fabricmc.net/develop o en la rama de la versión en https://github.com/FabricMC/fabric (`gradle.properties`).
 2. `./gradlew genSources build`. Si algo no compila, corrige la firma comparándola con el código nuevo.
 3. `./gradlew runClient` y entra en un mundo. Con `defaultRequire = 1`, un mixin que no encuentra su sitio cierra el juego, y el log dice cuál es.
-4. `pwsh -File tools/check-overwrites.ps1`: compara las copias de `docs/vanilla` (el método sustituido con `@Overwrite` y los 5 shaders) con la versión nueva. Si algo ha cambiado, aplica el cambio de Mojang a la versión del mod y actualiza las copias con `-Update`.
+4. `pwsh -File tools/check-overwrites.ps1`: compara las copias de `docs/vanilla` (el método sustituido con `@Overwrite` y los 3 shaders) con la versión nueva. Si algo ha cambiado, aplica el cambio de Mojang a la versión del mod y actualiza las copias con `-Update`.
 5. `./gradlew runGameTest`.
 
 Puntos frágiles, de más a menos:
