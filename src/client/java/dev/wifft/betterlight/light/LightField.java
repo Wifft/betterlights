@@ -53,7 +53,7 @@ public record LightField(int[] cells, float originX, float originY, float origin
 		return cells;
 	}
 
-	// Trilinear blend between cell centers; cells without any light (usually solid blocks) are skipped, like LightCoordsUtil.smoothBlend
+	// Trilinear blend between cell centers (LightBlend)
 	public int sample(final float x, final float y, final float z) {
 		float gx = Math.clamp(x - this.originX - 0.5F, 0.0F, (float)(SIZE - 1));
 		float gy = Math.clamp(y - this.originY - 0.5F, 0.0F, (float)(SIZE - 1));
@@ -61,34 +61,13 @@ public record LightField(int[] cells, float originX, float originY, float origin
 		int baseX = Math.min(Mth.floor(gx), SIZE - 2);
 		int baseY = Math.min(Mth.floor(gy), SIZE - 2);
 		int baseZ = Math.min(Mth.floor(gz), SIZE - 2);
-		float fx = gx - (float)baseX;
-		float fy = gy - (float)baseY;
-		float fz = gz - (float)baseZ;
-		float blockSum = 0.0F;
-		float skySum = 0.0F;
-		float weightSum = 0.0F;
-
-		for (int corner = 0; corner < 8; ++corner) {
-			int dx = corner & 1;
-			int dy = corner >> 1 & 1;
-			int dz = corner >> 2 & 1;
-			float weight = (dx == 1 ? fx : 1.0F - fx) * (dy == 1 ? fy : 1.0F - fy) * (dz == 1 ? fz : 1.0F - fz);
-			if (weight > 0.0F) {
-				int light = this.cells[((baseX + dx) * SIZE + baseY + dy) * SIZE + baseZ + dz];
-				if (light != 0) {
-					blockSum += (float)LightCoordsUtil.block(light) * weight;
-					skySum += (float)LightCoordsUtil.sky(light) * weight;
-					weightSum += weight;
-				}
-			}
-		}
-
-		if (weightSum <= 0.0F) {
-			return this.fallback;
-		} else {
-			int block = Math.min(Math.round(blockSum / weightSum * 16.0F), 240);
-			int sky = Math.min(Math.round(skySum / weightSum * 16.0F), 240);
-			return LightCoordsUtil.smoothPack(block, sky);
-		}
+		int[] cells = this.cells;
+		int i = (baseX * SIZE + baseY) * SIZE + baseZ;
+		final int dx = SIZE * SIZE;
+		final int dy = SIZE;
+		return LightBlend.trilinear(
+			cells[i], cells[i + dx], cells[i + dy], cells[i + dx + dy], cells[i + 1], cells[i + dx + 1], cells[i + dy + 1], cells[i + dx + dy + 1],
+			gx - (float)baseX, gy - (float)baseY, gz - (float)baseZ, this.fallback
+		);
 	}
 }
