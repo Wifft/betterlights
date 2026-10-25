@@ -46,4 +46,10 @@ public abstract class ClientLevelMixin {
 	private void betterlight$blockChanged(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo ci) {
 		this.betterlight$frontLight.blockChanged(pos, oldState, newState);
 	}
+
+	// Once per frame, next to the vanilla light updates: refills the furnaces marked dirty since the last frame
+	@Inject(method = "update", at = @At("TAIL"))
+	private void betterlight$updateFrontLight(CallbackInfo ci) {
+		this.betterlight$frontLight.update();
+	}
 }
