@@ -26,7 +26,6 @@
 		"ModelSubmitMixin",
 		"PaintingRendererMixin",
 		"RenderPipelinesMixin",
-		"VersionLabelMixin",
 		"VertexConsumerMixin",
 		"VideoSettingsScreenMixin"
 	],
