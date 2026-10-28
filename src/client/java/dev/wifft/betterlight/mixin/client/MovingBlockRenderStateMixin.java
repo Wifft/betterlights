@@ -1,5 +1,6 @@
 package dev.wifft.betterlight.mixin.client;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import dev.wifft.betterlight.duck.MovingBlockNeighbors;
 import dev.wifft.betterlight.light.NeighborStates;
 import net.minecraft.client.renderer.block.MovingBlockRenderState;
@@ -10,8 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Vanilla's moving block level is air everywhere but the block itself, so falling and piston-moved blocks get no AO
@@ -24,19 +23,27 @@ public abstract class MovingBlockRenderStateMixin implements MovingBlockNeighbor
 
 	@Unique
 	private BlockState @Nullable [] betterlight$neighbors;
+
+	@Override
+	public BlockState @Nullable [] betterlight$getNeighbors() {
+		return this.betterlight$neighbors;
+	}
+
 	@Override
 	public void betterlight$setNeighbors(BlockState @Nullable [] neighbors) {
 		this.betterlight$neighbors = neighbors;
 	}
 
-	@Inject(method = "getBlockState", at = @At("HEAD"), cancellable = true)
-	private void betterlight$neighborState(BlockPos pos, CallbackInfoReturnable<BlockState> cir) {
+	// Not a cancellable inject: the AO calls this many times per face, and that would allocate a callback each time
+	@ModifyReturnValue(method = "getBlockState", at = @At("RETURN"))
+	private BlockState betterlight$neighborState(BlockState original, BlockPos pos) {
 		BlockState[] neighbors = this.betterlight$neighbors;
 		if (neighbors != null && !pos.equals(this.blockPos)) {
 			BlockState state = NeighborStates.get(neighbors, this.blockPos, pos);
 			if (state != null) {
-				cir.setReturnValue(state);
+				return state;
 			}
 		}
+		return original;
 	}
 }

@@ -34,15 +34,22 @@ public final class MovingBlockShadows {
 	// Nearest falling blocks that cast AO; the rest (big avalanches) don't
 	private static final int MAX_BLOCKS = 64;
 	private static final double MAX_DISTANCE_SQ = 64.0 * 64.0;
+	// With nothing falling, entities are only scanned every few frames (a block that starts falling moves little in that time)
+	private static final int IDLE_SCAN_INTERVAL = 4;
 
 	private final ClientLevel level;
 	private Long2ObjectMap<BlockState> cells = Long2ObjectMaps.emptyMap();
+	private int idleFrames;
 
 	public MovingBlockShadows(final ClientLevel level) {
 		this.level = level;
 	}
 
 	public void update() {
+		if (this.cells.isEmpty() && this.idleFrames++ % IDLE_SCAN_INTERVAL != 0) {
+			return;
+		}
+
 		Long2ObjectMap<BlockState> next = BetterlightConfig.movingBlockShadows ? this.collect() : Long2ObjectMaps.emptyMap();
 		Long2ObjectMap<BlockState> previous = this.cells;
 		if (next.isEmpty() && previous.isEmpty()) {

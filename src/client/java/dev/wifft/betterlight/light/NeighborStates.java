@@ -15,7 +15,11 @@ public final class NeighborStates {
 	}
 
 	public static BlockState[] capture(final BlockGetter level, final BlockPos center) {
-		BlockState[] states = new BlockState[27];
+		return capture(level, center, new BlockState[27]);
+	}
+
+	// Into an array of 27 that is being reused
+	public static BlockState[] capture(final BlockGetter level, final BlockPos center, final BlockState[] states) {
 		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 		for (int dx = -1; dx <= 1; dx++) {
 			for (int dy = -1; dy <= 1; dy++) {
