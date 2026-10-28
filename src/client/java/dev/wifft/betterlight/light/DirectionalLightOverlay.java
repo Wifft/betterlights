@@ -11,7 +11,9 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Map;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -21,12 +23,13 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.BaseTorchBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 
 // Client-only light of torches and lanterns that only reaches what the emitter can see.
 // Each emitter gets a field with two values per cell: V, the vanilla light it casts (the engine's flood fill), and D, its
@@ -53,6 +56,10 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 	private static final int RAYS = 8;
 	private static final double SOURCE_SPREAD = 0.35;
 	private static final double TARGET_SPREAD = 0.4;
+	// Cell classes for the rays
+	private static final byte CLEAR = 0;
+	private static final byte OPAQUE = 1;
+	private static final byte SHAPED = 2;
 	private static final int MERGE_BATCH = 16;
 	private static final long BUDGET_NANOS = 3_000_000L;
 	private final ClientLevel level;
@@ -61,34 +68,66 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 	// Field sources by the section they're in
 	private final Long2ObjectMap<LongSet> sourcesBySection = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet dirtySources = new LongLinkedOpenHashSet();
-	// Emitters whose chunk light hasn't arrived yet: the pruning reads it
-	private final LongSet waitingSources = new LongOpenHashSet();
+	// Emitters whose chunk light hasn't arrived yet (the pruning reads it), by chunk
+	private final Long2ObjectMap<LongSet> waitingByChunk = new Long2ObjectOpenHashMap<>();
 	private final LongLinkedOpenHashSet dirtySections = new LongLinkedOpenHashSet();
 	// O per merged section, only read to seed later merges
 	private final Long2ObjectMap<byte[]> others = new Long2ObjectOpenHashMap<>();
 	// V << 4 | max(D, O) per cell (sectionIndex), 0 where no field reaches
 	private volatile Long2ObjectOpenHashMap<byte[]> merged = new Long2ObjectOpenHashMap<>();
-	// Scratch for fills: block states read lazily (valid where stamp == generation), V and D, and the cells they touched
+	// Scratch for fills: block states and their ray class read lazily (valid where stamp == generation), V and D, and
+	// the cells they touched
 	private final BlockState[] states = new BlockState[VOLUME];
+	private final byte[] cellClasses = new byte[VOLUME];
 	private final int[] stateStamps = new int[VOLUME];
 	private int generation;
 	private final byte[] vanilla = new byte[VOLUME];
 	private final byte[] shadowed = new byte[VOLUME];
 	private final IntArrayList touched = new IntArrayList();
+	private final IntArrayFIFOQueue fillQueue = new IntArrayFIFOQueue();
+	private final IntArrayFIFOQueue[] fillBuckets = new IntArrayFIFOQueue[16];
 	private final Map<BlockState, AABB[]> occlusionBoxes = new Reference2ObjectOpenHashMap<>();
 	private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 	private int originX;
 	private int originY;
 	private int originZ;
+	// Scratch for merges: per-section arrays (zeroed when returned), and the chunk sections read
+	private final ArrayDeque<byte[]> sectionArrays = new ArrayDeque<>();
+	private final LongArrayFIFOQueue[] mergeBuckets = new LongArrayFIFOQueue[16];
+	private final Long2ObjectMap<LevelChunkSection> chunkSections = new Long2ObjectOpenHashMap<>();
 
 	// cells are localIndex << 8 | V << 4 | D, sorted, for the box of RADIUS around (x, y, z);
-	// missingChunks are the unloaded chunks the fill read as air
-	private record Field(int x, int y, int z, int[] cells, LongSet missingChunks) {
+	// missingChunks are the unloaded chunks the fill read as air (shared empty set when none)
+	private static final class Field {
+		final int x;
+		final int y;
+		final int z;
+		final int[] cells;
+		LongSet missingChunks;
+
+		Field(final int x, final int y, final int z, final int[] cells, final LongSet missingChunks) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.cells = cells;
+			this.missingChunks = missingChunks;
+		}
+
+		void addMissingChunk(final long chunkKey) {
+			if (this.missingChunks == LongSets.EMPTY_SET) {
+				this.missingChunks = new LongOpenHashSet();
+			}
+			this.missingChunks.add(chunkKey);
+		}
 	}
 
 	public DirectionalLightOverlay(final ClientLevel level, final BlockLightOverlayTarget engine) {
 		this.level = level;
 		this.engine = engine;
+		for (int i = 0; i < 16; i++) {
+			this.fillBuckets[i] = new IntArrayFIFOQueue();
+			this.mergeBuckets[i] = new LongArrayFIFOQueue();
+		}
 	}
 
 	public static boolean isTracked(final BlockState state) {
@@ -101,7 +140,11 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 
 	@Override
 	public int getLightValue(final long pos, final int engineLevel) {
-		byte[] section = this.merged.get(SectionPos.blockToSection(pos));
+		Long2ObjectOpenHashMap<byte[]> merged = this.merged;
+		if (merged.isEmpty()) {
+			return engineLevel;
+		}
+		byte[] section = merged.get(SectionPos.blockToSection(pos));
 		if (section == null) {
 			return engineLevel;
 		}
@@ -111,7 +154,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 
 	public void blockChanged(final BlockPos pos, final BlockState oldState, final BlockState newState) {
 		long node = pos.asLong();
-		if (isTracked(newState) || this.fields.containsKey(node) || this.waitingSources.remove(node)) {
+		if (isTracked(newState) || this.fields.containsKey(node) || this.removeWaiting(node)) {
 			this.dirtySources.add(node);
 		}
 
@@ -172,7 +215,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 					LongIterator it = sources.iterator();
 					while (it.hasNext()) {
 						long source = it.nextLong();
-						if (this.fields.get(source).missingChunks().contains(chunkKey)) {
+						if (this.fields.get(source).missingChunks.contains(chunkKey)) {
 							this.dirtySources.add(source);
 						}
 					}
@@ -191,7 +234,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 				}
 			}
 		}
-		this.waitingSources.removeIf((long node) -> SectionPos.blockToSectionCoord(BlockPos.getX(node)) == pos.x() && SectionPos.blockToSectionCoord(BlockPos.getZ(node)) == pos.z());
+		this.waitingByChunk.remove(chunkKey);
 
 		// Fills around it are redone if the chunk comes back
 		for (int cx = pos.x() - 1; cx <= pos.x() + 1; cx++) {
@@ -203,7 +246,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 					}
 					LongIterator it = sources.iterator();
 					while (it.hasNext()) {
-						this.fields.get(it.nextLong()).missingChunks().add(chunkKey);
+						this.fields.get(it.nextLong()).addMissingChunk(chunkKey);
 					}
 				}
 			}
@@ -216,13 +259,9 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			this.markMergedDirty(SectionPos.asLong(chunkX, sy, chunkZ));
 		}
 
-		LongIterator it = this.waitingSources.iterator();
-		while (it.hasNext()) {
-			long node = it.nextLong();
-			if (SectionPos.blockToSectionCoord(BlockPos.getX(node)) == chunkX && SectionPos.blockToSectionCoord(BlockPos.getZ(node)) == chunkZ) {
-				it.remove();
-				this.dirtySources.add(node);
-			}
+		LongSet waiting = this.waitingByChunk.remove(ChunkPos.pack(chunkX, chunkZ));
+		if (waiting != null) {
+			this.dirtySources.addAll(waiting);
 		}
 	}
 
@@ -246,7 +285,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 				continue;
 			}
 			if (this.engine.betterlight$getRawLightValue(node) < state.getLightEmission()) {
-				this.waitingSources.add(node);
+				this.waitingByChunk.computeIfAbsent(ChunkPos.pack(pos), k -> new LongOpenHashSet()).add(node);
 				continue;
 			}
 
@@ -256,10 +295,30 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			this.markFieldSections(field);
 		}
 
-		// Merge once the fills are done, so sections aren't rebuilt for every step of a big batch
+		// Merge once the fills are done, so sections aren't rebuilt for every step of a big batch; all the batches of a
+		// frame go into one copy of the snapshot
+		Long2ObjectOpenHashMap<byte[]> published = null;
 		while (this.dirtySources.isEmpty() && !this.dirtySections.isEmpty() && System.nanoTime() < deadline) {
-			this.mergeSections();
+			if (published == null) {
+				published = new Long2ObjectOpenHashMap<>(this.merged);
+			}
+			this.mergeSections(published);
 		}
+		if (published != null) {
+			this.merged = published;
+		}
+	}
+
+	private boolean removeWaiting(final long node) {
+		long chunkKey = ChunkPos.pack(SectionPos.blockToSectionCoord(BlockPos.getX(node)), SectionPos.blockToSectionCoord(BlockPos.getZ(node)));
+		LongSet waiting = this.waitingByChunk.get(chunkKey);
+		if (waiting == null || !waiting.remove(node)) {
+			return false;
+		}
+		if (waiting.isEmpty()) {
+			this.waitingByChunk.remove(chunkKey);
+		}
+		return true;
 	}
 
 	private Field removeField(final long source) {
@@ -282,12 +341,12 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 	}
 
 	private void markFieldSections(final Field field) {
-		for (int cell : field.cells()) {
+		for (int cell : field.cells) {
 			int local = cell >>> 8;
 			this.dirtySections.add(SectionPos.asLong(
-				SectionPos.blockToSectionCoord(field.x() - RADIUS + local % SIDE),
-				SectionPos.blockToSectionCoord(field.y() - RADIUS + local / (SIDE * SIDE)),
-				SectionPos.blockToSectionCoord(field.z() - RADIUS + local / SIDE % SIDE)
+				SectionPos.blockToSectionCoord(field.x - RADIUS + local % SIDE),
+				SectionPos.blockToSectionCoord(field.y - RADIUS + local / (SIDE * SIDE)),
+				SectionPos.blockToSectionCoord(field.z - RADIUS + local / SIDE % SIDE)
 			));
 		}
 	}
@@ -307,15 +366,15 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 	}
 
 	private static boolean inBox(final Field field, final int x, final int y, final int z) {
-		return Math.abs(x - field.x()) <= RADIUS && Math.abs(y - field.y()) <= RADIUS && Math.abs(z - field.z()) <= RADIUS;
+		return Math.abs(x - field.x) <= RADIUS && Math.abs(y - field.y) <= RADIUS && Math.abs(z - field.z) <= RADIUS;
 	}
 
 	private static int vanillaAt(final Field field, final int x, final int y, final int z) {
 		if (!inBox(field, x, y, z)) {
 			return 0;
 		}
-		int local = index(x - field.x() + RADIUS, y - field.y() + RADIUS, z - field.z() + RADIUS);
-		int[] cells = field.cells();
+		int local = index(x - field.x + RADIUS, y - field.y + RADIUS, z - field.z + RADIUS);
+		int[] cells = field.cells;
 		int low = 0;
 		int high = cells.length - 1;
 		while (low <= high) {
@@ -340,8 +399,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			Arrays.fill(this.stateStamps, 0);
 			this.generation = 1;
 		}
-		this.states[CENTER] = sourceState;
-		this.stateStamps[CENTER] = this.generation;
+		this.setState(CENTER, sourceState);
 		byte[] vanilla = this.vanilla;
 		byte[] shadowed = this.shadowed;
 		IntArrayList touched = this.touched;
@@ -350,7 +408,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 		// Vanilla light, the same flood fill as the engine, stopping where the engine is clearly brighter
 		vanilla[CENTER] = (byte) sourceState.getLightEmission();
 		touched.add(CENTER);
-		IntArrayFIFOQueue queue = new IntArrayFIFOQueue();
+		IntArrayFIFOQueue queue = this.fillQueue;
 		queue.enqueue(CENTER);
 		while (!queue.isEmpty()) {
 			int from = queue.dequeueInt();
@@ -386,9 +444,9 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 		// Direct light: cells the emitter fully sees keep the vanilla value; through a partly blocked way the emitter acts
 		// as a weaker one, losing the blocked fraction of its emission (half a slab halves its reach)
 		int emission = sourceState.getLightEmission();
-		IntArrayFIFOQueue[] buckets = new IntArrayFIFOQueue[16];
-		for (int i = 0; i < buckets.length; i++) {
-			buckets[i] = new IntArrayFIFOQueue();
+		IntArrayFIFOQueue[] buckets = this.fillBuckets;
+		for (IntArrayFIFOQueue bucket : buckets) {
+			bucket.clear();
 		}
 		for (int i = 0; i < touched.size(); i++) {
 			int cell = touched.getInt(i);
@@ -438,16 +496,15 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			shadowed[cell] = 0;
 		}
 
-		LongSet missingChunks = new LongOpenHashSet();
+		Field field = new Field(source.getX(), source.getY(), source.getZ(), cells, LongSets.EMPTY_SET);
 		for (int cx = SectionPos.blockToSectionCoord(this.originX); cx <= SectionPos.blockToSectionCoord(this.originX + SIDE - 1); cx++) {
 			for (int cz = SectionPos.blockToSectionCoord(this.originZ); cz <= SectionPos.blockToSectionCoord(this.originZ + SIDE - 1); cz++) {
 				if (this.level.getChunkSource().getChunk(cx, cz, false) == null) {
-					missingChunks.add(ChunkPos.pack(cx, cz));
+					field.addMissingChunk(ChunkPos.pack(cx, cz));
 				}
 			}
 		}
-
-		return new Field(source.getX(), source.getY(), source.getZ(), cells, missingChunks);
+		return field;
 	}
 
 	// How many of the RAYS from the emitter's block reach the target cell, skipping the first and last cell of each
@@ -507,7 +564,8 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			if (x == endX && y == endY && z == endZ || !inBox(x, y, z)) {
 				return true;
 			}
-			if (this.blocks(x, y, z, fromX, fromY, fromZ, toX, toY, toZ)) {
+			byte cellClass = this.cellClass(x, y, z);
+			if (cellClass == OPAQUE || cellClass == SHAPED && this.crossesShape(x, y, z, fromX, fromY, fromZ, dx, dy, dz)) {
 				return false;
 			}
 		}
@@ -515,21 +573,47 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 		return true;
 	}
 
-	// Full opaque blocks, and the blocks the engine occludes light with by shape (slabs, stairs...) if the segment
-	// crosses their shape. The boxes are shrunk a little so a segment grazing a face passes
-	private boolean blocks(final int x, final int y, final int z, final double fromX, final double fromY, final double fromZ, final double toX, final double toY, final double toZ) {
-		BlockState state = this.state(x, y, z);
-		if (state.getLightDampening() >= 15) {
-			return true;
-		}
-		if (!state.canOcclude() || !state.useShapeForLightOcclusion()) {
-			return false;
-		}
-
-		Vec3 from = new Vec3(fromX - x, fromY - y, fromZ - z);
-		Vec3 to = new Vec3(toX - x, toY - y, toZ - z);
-		for (AABB box : this.occlusionBoxes.computeIfAbsent(state, DirectionalLightOverlay::shrunkOcclusionBoxes)) {
-			if (box.clip(from, to).isPresent()) {
+	// Whether the segment crosses the occlusion shape of a SHAPED cell (slabs, stairs...: the blocks the engine occludes
+	// light with by shape). The boxes are shrunk a little so a segment grazing a face passes
+	private boolean crossesShape(final int x, final int y, final int z, final double fromX, final double fromY, final double fromZ, final double dx, final double dy, final double dz) {
+		double px = fromX - x;
+		double py = fromY - y;
+		double pz = fromZ - z;
+		for (AABB box : this.occlusionBoxes.computeIfAbsent(this.state(x, y, z), DirectionalLightOverlay::shrunkOcclusionBoxes)) {
+			// Slab test: the segment's t range inside the box on each axis, intersected
+			double tMin = 0.0;
+			double tMax = 1.0;
+			if (Math.abs(dx) < 1.0E-9) {
+				if (px < box.minX || px > box.maxX) {
+					continue;
+				}
+			} else {
+				double t1 = (box.minX - px) / dx;
+				double t2 = (box.maxX - px) / dx;
+				tMin = Math.max(tMin, Math.min(t1, t2));
+				tMax = Math.min(tMax, Math.max(t1, t2));
+			}
+			if (Math.abs(dy) < 1.0E-9) {
+				if (py < box.minY || py > box.maxY) {
+					continue;
+				}
+			} else {
+				double t1 = (box.minY - py) / dy;
+				double t2 = (box.maxY - py) / dy;
+				tMin = Math.max(tMin, Math.min(t1, t2));
+				tMax = Math.min(tMax, Math.max(t1, t2));
+			}
+			if (Math.abs(dz) < 1.0E-9) {
+				if (pz < box.minZ || pz > box.maxZ) {
+					continue;
+				}
+			} else {
+				double t1 = (box.minZ - pz) / dz;
+				double t2 = (box.maxZ - pz) / dz;
+				tMin = Math.max(tMin, Math.min(t1, t2));
+				tMax = Math.min(tMax, Math.max(t1, t2));
+			}
+			if (tMin <= tMax) {
 				return true;
 			}
 		}
@@ -543,14 +627,27 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 	private BlockState state(final int x, final int y, final int z) {
 		int index = index(x, y, z);
 		if (this.stateStamps[index] != this.generation) {
-			this.states[index] = this.level.getBlockState(this.mutablePos.set(this.originX + x, this.originY + y, this.originZ + z));
-			this.stateStamps[index] = this.generation;
+			this.setState(index, this.level.getBlockState(this.mutablePos.set(this.originX + x, this.originY + y, this.originZ + z)));
 		}
 		return this.states[index];
 	}
 
-	// Rebuilds the merged values of a batch of dirty sections from the fields and the engine, and publishes them
-	private void mergeSections() {
+	private byte cellClass(final int x, final int y, final int z) {
+		int index = index(x, y, z);
+		if (this.stateStamps[index] != this.generation) {
+			this.state(x, y, z);
+		}
+		return this.cellClasses[index];
+	}
+
+	private void setState(final int index, final BlockState state) {
+		this.states[index] = state;
+		this.cellClasses[index] = state.getLightDampening() >= 15 ? OPAQUE : state.canOcclude() && state.useShapeForLightOcclusion() ? SHAPED : CLEAR;
+		this.stateStamps[index] = this.generation;
+	}
+
+	// Rebuilds the merged values of a batch of dirty sections from the fields and the engine into published
+	private void mergeSections(final Long2ObjectOpenHashMap<byte[]> published) {
 		LongSet sections = new LongOpenHashSet();
 		while (sections.size() < MERGE_BATCH && !this.dirtySections.isEmpty()) {
 			sections.add(this.dirtySections.removeFirstLong());
@@ -578,15 +675,15 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 		LongIterator candidateIt = candidates.iterator();
 		while (candidateIt.hasNext()) {
 			Field field = this.fields.get(candidateIt.nextLong());
-			for (int cell : field.cells()) {
+			for (int cell : field.cells) {
 				int local = cell >>> 8;
-				int x = field.x() - RADIUS + local % SIDE;
-				int y = field.y() - RADIUS + local / (SIDE * SIDE);
-				int z = field.z() - RADIUS + local / SIDE % SIDE;
+				int x = field.x - RADIUS + local % SIDE;
+				int y = field.y - RADIUS + local / (SIDE * SIDE);
+				int z = field.z - RADIUS + local / SIDE % SIDE;
 				long key = SectionPos.asLong(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(y), SectionPos.blockToSectionCoord(z));
 				if (sections.contains(key)) {
-					byte[] v = vanilla.computeIfAbsent(key, k -> new byte[4096]);
-					byte[] d = shadowed.computeIfAbsent(key, k -> new byte[4096]);
+					byte[] v = vanilla.computeIfAbsent(key, k -> this.takeSectionArray());
+					byte[] d = shadowed.computeIfAbsent(key, k -> this.takeSectionArray());
 					int i = sectionIndex(x, y, z);
 					v[i] = (byte) Math.max(v[i], cell >>> 4 & 15);
 					d[i] = (byte) Math.max(d[i], cell & 15);
@@ -597,16 +694,12 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 		// O: exact where the engine is brighter than V; elsewhere spread (like the engine) from those cells, from the
 		// other emitters and from the known values around the merged cells
 		Long2ObjectMap<byte[]> other = new Long2ObjectOpenHashMap<>();
-		LongArrayFIFOQueue[] buckets = new LongArrayFIFOQueue[16];
-		for (int i = 0; i < buckets.length; i++) {
-			buckets[i] = new LongArrayFIFOQueue();
-		}
-		BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-		BlockPos.MutableBlockPos neighborPos = new BlockPos.MutableBlockPos();
+		LongArrayFIFOQueue[] buckets = this.mergeBuckets;
+		this.chunkSections.clear();
 
 		for (Long2ObjectMap.Entry<byte[]> entry : vanilla.long2ObjectEntrySet()) {
 			byte[] v = entry.getValue();
-			byte[] o = new byte[4096];
+			byte[] o = this.takeSectionArray();
 			other.put(entry.getLongKey(), o);
 			int minX = SectionPos.sectionToBlockCoord(SectionPos.x(entry.getLongKey()));
 			int minY = SectionPos.sectionToBlockCoord(SectionPos.y(entry.getLongKey()));
@@ -616,20 +709,22 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 				if (v[i] == 0) {
 					continue;
 				}
-				pos.set(minX + (i & 15), minY + (i >> 8), minZ + (i >> 4 & 15));
-				long node = pos.asLong();
+				int x = minX + (i & 15);
+				int y = minY + (i >> 8);
+				int z = minZ + (i >> 4 & 15);
+				long node = BlockPos.asLong(x, y, z);
 				int engineLevel = this.engine.betterlight$getRawLightValue(node);
 				int otherLevel;
 				if (engineLevel > v[i]) {
 					otherLevel = engineLevel;
 				} else {
-					BlockState state = this.level.getBlockState(pos);
+					BlockState state = this.mergeState(x, y, z);
 					otherLevel = isTracked(state) || FrontEmitters.isFrontEmitter(state) ? 0 : state.getLightEmission();
 					for (Direction direction : DIRECTIONS) {
 						long neighbor = BlockPos.offset(node, direction);
-						int known = this.knownOther(neighbor, sections, vanilla);
+						int known = this.knownOther(neighbor, sections, vanilla, published);
 						if (known - 1 > otherLevel) {
-							BlockState neighborState = this.level.getBlockState(neighborPos.set(neighbor));
+							BlockState neighborState = this.mergeState(x + direction.getStepX(), y + direction.getStepY(), z + direction.getStepZ());
 							otherLevel = Math.max(otherLevel, known - LightEngine.getLightDampeningInto(neighborState, state, direction.getOpposite(), Math.max(1, state.getLightDampening())));
 						}
 					}
@@ -652,7 +747,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 				if (other.get(SectionPos.blockToSection(node))[sectionIndex(fromX, fromY, fromZ)] != bucketLevel) {
 					continue;
 				}
-				BlockState fromState = this.level.getBlockState(pos.set(node));
+				BlockState fromState = this.mergeState(fromX, fromY, fromZ);
 
 				for (Direction direction : DIRECTIONS) {
 					long toNode = BlockPos.offset(node, direction);
@@ -663,7 +758,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 						continue;
 					}
 					byte[] o = other.get(toSection);
-					BlockState toState = this.level.getBlockState(neighborPos.set(toNode));
+					BlockState toState = this.mergeState(fromX + direction.getStepX(), fromY + direction.getStepY(), fromZ + direction.getStepZ());
 					int newLevel = bucketLevel - LightEngine.getLightDampeningInto(fromState, toState, direction, Math.max(1, toState.getLightDampening()));
 					if (newLevel > o[toIndex]) {
 						o[toIndex] = (byte) newLevel;
@@ -675,15 +770,14 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			}
 		}
 
-		Long2ObjectOpenHashMap<byte[]> published = new Long2ObjectOpenHashMap<>(this.merged);
 		LongIterator it = sections.iterator();
 		while (it.hasNext()) {
 			long key = it.nextLong();
 			byte[] packed = null;
 			byte[] v = vanilla.get(key);
+			byte[] o = other.get(key);
 			if (v != null) {
 				byte[] d = shadowed.get(key);
-				byte[] o = other.get(key);
 				for (int i = 0; i < 4096; i++) {
 					if (v[i] > 0) {
 						if (packed == null) {
@@ -692,22 +786,47 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 						packed[i] = (byte) (v[i] << 4 | Math.max(d[i], o[i]));
 					}
 				}
+				this.returnSectionArray(v);
+				this.returnSectionArray(d);
 			}
 
 			byte[] oldPacked = packed != null ? published.put(key, packed) : published.remove(key);
-			if (packed != null) {
-				this.others.put(key, other.get(key));
-			} else {
-				this.others.remove(key);
+			byte[] oldOther = packed != null ? this.others.put(key, o) : this.others.remove(key);
+			if (oldOther != null) {
+				this.returnSectionArray(oldOther);
+			}
+			if (packed == null && o != null) {
+				this.returnSectionArray(o);
 			}
 			this.setChangedDirty(key, oldPacked, packed);
 		}
+	}
 
-		this.merged = published;
+	private byte[] takeSectionArray() {
+		byte[] array = this.sectionArrays.poll();
+		return array != null ? array : new byte[4096];
+	}
+
+	private void returnSectionArray(final byte[] array) {
+		Arrays.fill(array, (byte) 0);
+		this.sectionArrays.push(array);
+	}
+
+	// Block states for the merge, straight from the chunk sections (cached for the merge)
+	private BlockState mergeState(final int x, final int y, final int z) {
+		long sectionKey = SectionPos.asLong(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(y), SectionPos.blockToSectionCoord(z));
+		LevelChunkSection section = this.chunkSections.get(sectionKey);
+		if (section == null && !this.chunkSections.containsKey(sectionKey)) {
+			LevelChunk chunk = this.level.getChunkSource().getChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z), false);
+			int sectionIndex = this.level.getSectionIndex(y);
+			section = chunk != null && sectionIndex >= 0 && sectionIndex < chunk.getSections().length ? chunk.getSection(sectionIndex) : null;
+			this.chunkSections.put(sectionKey, section);
+		}
+		return section != null ? section.getBlockState(x & 15, y & 15, z & 15) : Blocks.AIR.defaultBlockState();
 	}
 
 	// O of a cell next to the merged ones, or -1 if it's merged too (the spread computes it)
-	private int knownOther(final long node, final LongSet sections, final Long2ObjectMap<byte[]> vanilla) {
+	private int knownOther(final long node, final LongSet sections, final Long2ObjectMap<byte[]> vanilla, final Long2ObjectOpenHashMap<byte[]> published) {
 		long sectionKey = SectionPos.blockToSection(node);
 		int i = sectionIndex(BlockPos.getX(node), BlockPos.getY(node), BlockPos.getZ(node));
 		if (sections.contains(sectionKey)) {
@@ -715,7 +834,7 @@ public final class DirectionalLightOverlay implements BlockLightOverlay {
 			return v != null && v[i] > 0 ? -1 : this.engine.betterlight$getRawLightValue(node);
 		}
 
-		byte[] packed = this.merged.get(sectionKey);
+		byte[] packed = published.get(sectionKey);
 		if (packed != null && packed[i] != 0) {
 			byte[] o = this.others.get(sectionKey);
 			return o != null ? o[i] : 0;
