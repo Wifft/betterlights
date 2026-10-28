@@ -9,6 +9,8 @@ import dev.wifft.betterlight.light.MovingBlockShadows;
 import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -80,8 +82,13 @@ public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, Dire
 	// Once per frame, after the vanilla light updates: refills the emitters marked dirty since the last frame
 	@Inject(method = "update", at = @At("TAIL"))
 	private void betterlight$updateFrontLight(CallbackInfo ci) {
+		ProfilerFiller profiler = Profiler.get();
+		profiler.push("betterlight_front");
 		this.betterlight$frontLight.update();
+		profiler.popPush("betterlight_directional");
 		this.betterlight$directionalLight.update();
+		profiler.popPush("betterlight_movingShadows");
 		this.betterlight$movingBlockShadows.update();
+		profiler.pop();
 	}
 }
