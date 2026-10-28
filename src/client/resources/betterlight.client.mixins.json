@@ -8,6 +8,7 @@
 		"BlockModelFeatureRendererMixin",
 		"BlockModelLighterMixin",
 		"ClientLevelMixin",
+		"ClientPacketListenerMixin",
 		"CustomFeatureRendererMixin",
 		"EntityRendererMixin",
 		"FallingBlockRendererMixin",

@@ -6,4 +6,7 @@ import org.jspecify.annotations.Nullable;
 /** Added to LightEngine (block engine only) and LevelLightEngine (forwards to its block engine). */
 public interface BlockLightOverlayTarget {
 	void betterlight$setBlockLightOverlay(@Nullable BlockLightOverlay overlay);
+
+	/** Stored block light, without the overlay. */
+	int betterlight$getRawLightValue(long pos);
 }

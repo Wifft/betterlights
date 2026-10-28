@@ -1,6 +1,6 @@
 package dev.wifft.betterlight.light;
 
-/** Extra block light merged (max) into the block light engine's getLightValue, see FrontLightOverlay. */
+/** Replaces the block light engine's getLightValue on the client, see FrontLightOverlay and DirectionalLightOverlay. */
 public interface BlockLightOverlay {
-	int getLightValue(long pos);
+	int getLightValue(long pos, int engineLevel);
 }

@@ -26,6 +26,7 @@ public final class BetterlightConfig {
 	public static volatile boolean movingBlockShadows = true;
 	public static volatile boolean extendedPistonAo = true;
 	public static volatile boolean frontEmitters = true;
+	public static volatile boolean directionalTorches = true;
 
 	private BetterlightConfig() {
 	}
@@ -55,6 +56,7 @@ public final class BetterlightConfig {
 		movingBlockShadows = bool(props, "movingBlockShadows", true);
 		extendedPistonAo = bool(props, "extendedPistonAo", true);
 		frontEmitters = bool(props, "frontEmitters", true);
+		directionalTorches = bool(props, "directionalTorches", true);
 
 		if (!Files.exists(path)) {
 			save();
@@ -73,6 +75,7 @@ public final class BetterlightConfig {
 		props.setProperty("movingBlockShadows", Boolean.toString(movingBlockShadows));
 		props.setProperty("extendedPistonAo", Boolean.toString(extendedPistonAo));
 		props.setProperty("frontEmitters", Boolean.toString(frontEmitters));
+		props.setProperty("directionalTorches", Boolean.toString(directionalTorches));
 
 		Path path = path();
 		try {

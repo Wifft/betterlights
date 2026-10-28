@@ -22,4 +22,9 @@ public abstract class LevelLightEngineMixin implements BlockLightOverlayTarget {
 			((BlockLightOverlayTarget) this.blockEngine).betterlight$setBlockLightOverlay(overlay);
 		}
 	}
+
+	@Override
+	public int betterlight$getRawLightValue(long pos) {
+		return this.blockEngine instanceof BlockLightEngine ? ((BlockLightOverlayTarget) this.blockEngine).betterlight$getRawLightValue(pos) : 0;
+	}
 }

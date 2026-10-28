@@ -39,8 +39,8 @@ public final class FrontLightOverlay implements BlockLightOverlay {
 	}
 
 	@Override
-	public int getLightValue(final long pos) {
-		return this.merged.get(pos);
+	public int getLightValue(final long pos, final int engineLevel) {
+		return engineLevel < 15 ? Math.max(engineLevel, this.merged.get(pos)) : engineLevel;
 	}
 
 	public void blockChanged(final BlockPos pos, final BlockState oldState, final BlockState newState) {
