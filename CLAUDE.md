@@ -35,6 +35,8 @@ Loom `splitEnvironmentSourceSets()`: `src/main` is common code (runs on the serv
 
 **Front emitters (furnaces, jack o'lanterns)** — A flood fill can't stop light behind a plane, so `BlockLightEngineMixin` (common code) makes them emit nothing in the real light engine; this applies on the server too and is what the gametests cover. On the client, `FrontLightOverlay` runs a per-emitter flood fill that never steps backwards and publishes an immutable merged map; `ClientLevelMixin` feeds it block/chunk events (which only mark emitters dirty: a block change only affects fills that reached it or a neighbour, a chunk load only fills that read that chunk), runs its `update()` once per frame from `ClientLevel.update`, and installs it through `LevelLightEngineMixin`/`LightEngineMixin` (`BlockLightOverlayTarget`), which max-merges it into the block engine's `getLightValue`. `FrontEmitters` decides what counts as a front emitter.
 
+**Moving blocks (falling blocks, piston-moved blocks)** — Fabric routes `MovingBlockFeatureRenderer` through Indigo too, but vanilla's `MovingBlockRenderState` is air everywhere but the block itself, so they had no AO. `FallingBlockRendererMixin` and `PistonHeadRendererMixin` capture the 3×3×3 neighbour states at extraction (`NeighborStates`), and `MovingBlockRenderStateMixin` answers `getBlockState` from them. AO is still computed for the whole cell `blockPos`, so it steps when the block crosses a cell.
+
 **Paintings** — `PaintingRendererMixin` `@Overwrite`s `PaintingRenderer.renderPainting` for per-corner smooth light; the original vanilla method is kept in `docs/vanilla/` for diffing.
 
 ## Porting to a new Minecraft version

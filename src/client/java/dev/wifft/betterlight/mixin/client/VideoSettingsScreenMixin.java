@@ -50,6 +50,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 			betterlight$bool("blockEntityLightField", BetterlightConfig.blockEntityLightField, v -> BetterlightConfig.blockEntityLightField = v),
 			betterlight$bool("smoothEntities", BetterlightConfig.smoothEntities, v -> BetterlightConfig.smoothEntities = v),
 			betterlight$bool("smoothPaintingsFrames", BetterlightConfig.smoothPaintingsFrames, v -> BetterlightConfig.smoothPaintingsFrames = v),
+			betterlight$bool("movingBlockAo", BetterlightConfig.movingBlockAo, v -> BetterlightConfig.movingBlockAo = v),
 			betterlight$bool("frontEmitters", BetterlightConfig.frontEmitters, v -> BetterlightConfig.frontEmitters = v)
 		);
 	}

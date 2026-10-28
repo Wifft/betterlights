@@ -12,6 +12,8 @@
 	"betterlight.options.smoothEntities.tooltip": "Luz interpolada en las entidades, para que no salte al cruzar un borde de luz.",
 	"betterlight.options.smoothPaintingsFrames": "Cuadros y marcos suaves",
 	"betterlight.options.smoothPaintingsFrames.tooltip": "Luz suave por esquina en cuadros y marcos (MC-1531).",
+	"betterlight.options.movingBlockAo": "Oclusión en bloques móviles",
+	"betterlight.options.movingBlockAo.tooltip": "Los bloques que caen (arena, grava...) y los que empujan los pistones mantienen la oclusión ambiental mientras se mueven.",
 	"betterlight.options.frontEmitters": "Hornos con luz delantera",
 	"betterlight.options.frontEmitters.tooltip": "Los hornos, ahumadores, altos hornos y calabazas de Halloween encendidos solo iluminan el espacio de delante. Se aplica al volver a entrar en el mundo."
 }

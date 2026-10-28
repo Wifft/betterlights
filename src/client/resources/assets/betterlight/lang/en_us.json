@@ -12,6 +12,8 @@
 	"betterlight.options.smoothEntities.tooltip": "Interpolated light on entities, so they don't jump when crossing a light edge.",
 	"betterlight.options.smoothPaintingsFrames": "Smooth Paintings & Frames",
 	"betterlight.options.smoothPaintingsFrames.tooltip": "Per-corner smooth light on paintings and item frames (MC-1531).",
+	"betterlight.options.movingBlockAo": "Moving Block AO",
+	"betterlight.options.movingBlockAo.tooltip": "Falling blocks (sand, gravel...) and blocks pushed by pistons keep their ambient occlusion while they move.",
 	"betterlight.options.frontEmitters": "Front-Lit Furnaces",
 	"betterlight.options.frontEmitters.tooltip": "Lit furnaces, smokers, blast furnaces and jack o'lanterns only light the space in front of them. Applies when re-entering the world."
 }
