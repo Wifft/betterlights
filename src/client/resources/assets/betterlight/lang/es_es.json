@@ -14,6 +14,10 @@
 	"betterlight.options.smoothPaintingsFrames.tooltip": "Luz suave por esquina en cuadros y marcos (MC-1531).",
 	"betterlight.options.movingBlockAo": "Oclusión en bloques móviles",
 	"betterlight.options.movingBlockAo.tooltip": "Los bloques que caen (arena, grava...) y los que empujan los pistones mantienen la oclusión ambiental mientras se mueven.",
+	"betterlight.options.movingBlockShadows": "Sombra de bloques móviles",
+	"betterlight.options.movingBlockShadows.tooltip": "Los bloques que caen y los que empujan los pistones oscurecen el terreno a su alrededor como los bloques colocados. Vuelve a mallar las secciones cercanas mientras caen.",
+	"betterlight.options.extendedPistonAo": "Sombra de pistones extendidos",
+	"betterlight.options.extendedPistonAo.tooltip": "La base de los pistones extendidos oscurece el terreno a su alrededor como un pistón recogido, en lugar de no proyectar oclusión ambiental.",
 	"betterlight.options.frontEmitters": "Hornos con luz delantera",
 	"betterlight.options.frontEmitters.tooltip": "Los hornos, ahumadores, altos hornos y calabazas de Halloween encendidos solo iluminan el espacio de delante. Se aplica al volver a entrar en el mundo."
 }

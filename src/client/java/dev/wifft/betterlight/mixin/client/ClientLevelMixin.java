@@ -1,7 +1,9 @@
 package dev.wifft.betterlight.mixin.client;
 
 import dev.wifft.betterlight.duck.BlockLightOverlayTarget;
+import dev.wifft.betterlight.duck.MovingBlockShadowsHolder;
 import dev.wifft.betterlight.light.FrontLightOverlay;
+import dev.wifft.betterlight.light.MovingBlockShadows;
 import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -16,20 +18,31 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Feeds FrontLightOverlay with block and chunk changes and hooks it into the client light engine. */
+/**
+ * Feeds FrontLightOverlay with block and chunk changes and hooks it into the client light engine.
+ * Also owns the level's MovingBlockShadows, updated once per frame.
+ */
 @Mixin(ClientLevel.class)
-public abstract class ClientLevelMixin {
+public abstract class ClientLevelMixin implements MovingBlockShadowsHolder {
 	@Shadow
 	@Final
 	private ClientChunkCache chunkSource;
 
 	@Unique
 	private FrontLightOverlay betterlight$frontLight;
+	@Unique
+	private MovingBlockShadows betterlight$movingBlockShadows;
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void betterlight$createFrontLight(CallbackInfo ci) {
 		this.betterlight$frontLight = new FrontLightOverlay((ClientLevel) (Object) this);
 		((BlockLightOverlayTarget) this.chunkSource.getLightEngine()).betterlight$setBlockLightOverlay(this.betterlight$frontLight);
+		this.betterlight$movingBlockShadows = new MovingBlockShadows((ClientLevel) (Object) this);
+	}
+
+	@Override
+	public MovingBlockShadows betterlight$getMovingBlockShadows() {
+		return this.betterlight$movingBlockShadows;
 	}
 
 	@Inject(method = "unload", at = @At("TAIL"))
@@ -51,5 +64,6 @@ public abstract class ClientLevelMixin {
 	@Inject(method = "update", at = @At("TAIL"))
 	private void betterlight$updateFrontLight(CallbackInfo ci) {
 		this.betterlight$frontLight.update();
+		this.betterlight$movingBlockShadows.update();
 	}
 }

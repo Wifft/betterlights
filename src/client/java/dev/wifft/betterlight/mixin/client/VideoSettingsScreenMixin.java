@@ -27,6 +27,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 	private boolean betterlight$oldSmoothNoAoModels;
 	@Unique
 	private boolean betterlight$oldSmoothEmitters;
+	@Unique
+	private boolean betterlight$oldExtendedPistonAo;
 
 	private VideoSettingsScreenMixin(Screen lastScreen, Options options, Component title) {
 		super(lastScreen, options, title);
@@ -38,6 +40,7 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 		this.betterlight$oldSmoothFluids = BetterlightConfig.smoothFluids;
 		this.betterlight$oldSmoothNoAoModels = BetterlightConfig.smoothNoAoModels;
 		this.betterlight$oldSmoothEmitters = BetterlightConfig.smoothEmitters;
+		this.betterlight$oldExtendedPistonAo = BetterlightConfig.extendedPistonAo;
 	}
 
 	@Inject(method = "addOptions", at = @At("TAIL"))
@@ -51,6 +54,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 			betterlight$bool("smoothEntities", BetterlightConfig.smoothEntities, v -> BetterlightConfig.smoothEntities = v),
 			betterlight$bool("smoothPaintingsFrames", BetterlightConfig.smoothPaintingsFrames, v -> BetterlightConfig.smoothPaintingsFrames = v),
 			betterlight$bool("movingBlockAo", BetterlightConfig.movingBlockAo, v -> BetterlightConfig.movingBlockAo = v),
+			betterlight$bool("movingBlockShadows", BetterlightConfig.movingBlockShadows, v -> BetterlightConfig.movingBlockShadows = v),
+			betterlight$bool("extendedPistonAo", BetterlightConfig.extendedPistonAo, v -> BetterlightConfig.extendedPistonAo = v),
 			betterlight$bool("frontEmitters", BetterlightConfig.frontEmitters, v -> BetterlightConfig.frontEmitters = v)
 		);
 	}
@@ -60,7 +65,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 		BetterlightConfig.save();
 		if (BetterlightConfig.smoothFluids != this.betterlight$oldSmoothFluids
 			|| BetterlightConfig.smoothNoAoModels != this.betterlight$oldSmoothNoAoModels
-			|| BetterlightConfig.smoothEmitters != this.betterlight$oldSmoothEmitters) {
+			|| BetterlightConfig.smoothEmitters != this.betterlight$oldSmoothEmitters
+			|| BetterlightConfig.extendedPistonAo != this.betterlight$oldExtendedPistonAo) {
 			LevelExtractor levelExtractor = this.minecraft.levelExtractor;
 			if (levelExtractor != null) {
 				levelExtractor.allChanged();

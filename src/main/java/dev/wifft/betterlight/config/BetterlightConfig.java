@@ -23,6 +23,8 @@ public final class BetterlightConfig {
 	public static volatile boolean smoothEntities = true;
 	public static volatile boolean smoothPaintingsFrames = true;
 	public static volatile boolean movingBlockAo = true;
+	public static volatile boolean movingBlockShadows = true;
+	public static volatile boolean extendedPistonAo = true;
 	public static volatile boolean frontEmitters = true;
 
 	private BetterlightConfig() {
@@ -50,6 +52,8 @@ public final class BetterlightConfig {
 		smoothEntities = bool(props, "smoothEntities", true);
 		smoothPaintingsFrames = bool(props, "smoothPaintingsFrames", true);
 		movingBlockAo = bool(props, "movingBlockAo", true);
+		movingBlockShadows = bool(props, "movingBlockShadows", true);
+		extendedPistonAo = bool(props, "extendedPistonAo", true);
 		frontEmitters = bool(props, "frontEmitters", true);
 
 		if (!Files.exists(path)) {
@@ -66,6 +70,8 @@ public final class BetterlightConfig {
 		props.setProperty("smoothEntities", Boolean.toString(smoothEntities));
 		props.setProperty("smoothPaintingsFrames", Boolean.toString(smoothPaintingsFrames));
 		props.setProperty("movingBlockAo", Boolean.toString(movingBlockAo));
+		props.setProperty("movingBlockShadows", Boolean.toString(movingBlockShadows));
+		props.setProperty("extendedPistonAo", Boolean.toString(extendedPistonAo));
 		props.setProperty("frontEmitters", Boolean.toString(frontEmitters));
 
 		Path path = path();

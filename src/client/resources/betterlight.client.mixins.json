@@ -26,6 +26,8 @@
 		"PaintingRendererMixin",
 		"PistonHeadRendererMixin",
 		"RenderPipelinesMixin",
+		"RenderRegionCacheMixin",
+		"RenderSectionRegionMixin",
 		"SubmitLightFieldMixin",
 		"VertexConsumerMixin",
 		"VideoSettingsScreenMixin"
