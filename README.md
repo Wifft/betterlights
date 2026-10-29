@@ -4,9 +4,19 @@ Mod de Fabric para Minecraft 26.4-snapshot-5 que unifica la iluminación:
 - Luz suave en fluidos, en modelos sin oclusión ambiental (raíles, plantas, carteles…) y en bloques que emiten luz (portal del Nether).
 - Luz por vértice en bloques con entidad, marcos y cuadros, y luz interpolada en entidades.
 - Hornos y calabazas de Halloween encendidos que solo iluminan por delante.
+- Luces con sombras: antorchas, faroles, hogueras, piedra luminosa y otras fuentes de luz solo iluminan del todo lo que ven. Losas y escaleras tapan la luz según lo que cubren. Es solo visual: la luz del servidor sigue siendo la de vanilla.
+- Oclusión ambiental en bloques que caen o empuja un pistón, y la que proyectan sobre el terreno.
 - Sombreado por caras de los bloques hecho en el shader; las entidades y los objetos mantienen las dos luces de vanilla.
 
-Las opciones están en Opciones → Vídeo, en el apartado Betterlight, y se guardan en `config/betterlight.properties`.
+Las opciones están en Opciones → Vídeo, en el apartado Betterlight, y se guardan en `config/betterlight.properties`. Los cambios de cada versión están en [CHANGELOG.md](CHANGELOG.md).
+
+## Qué bloques tienen luz con sombras
+
+Lo deciden dos tags de bloque del mod:
+- `betterlight:shadowed_emitters`: luces con sombras.
+- `betterlight:front_emitters`: emisores que solo iluminan por delante. Necesitan la propiedad `facing`.
+
+Un datapack puede ampliarlos con `"replace": false` o sustituirlos con `"replace": true`, en `data/betterlight/tags/block/<tag>.json`. `/reload` aplica el cambio sin salir del mundo. Los bloques apagados (horno sin encender, lámpara apagada…) nunca cuentan.
 
 ## Compilar y probar
 
