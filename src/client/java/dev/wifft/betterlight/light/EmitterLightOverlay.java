@@ -3,6 +3,7 @@ package dev.wifft.betterlight.light;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongConsumer;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -31,6 +32,8 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 	private final Long2ObjectMap<LongSet> sourcesBySection = new Long2ObjectOpenHashMap<>();
 	protected final LongLinkedOpenHashSet dirtySources = new LongLinkedOpenHashSet();
 	private final LongLinkedOpenHashSet dirtySections = new LongLinkedOpenHashSet();
+	// For rescan
+	private final LongSet loadedChunks = new LongOpenHashSet();
 
 	protected EmitterLightOverlay(final ClientLevel level) {
 		this.level = level;
@@ -79,16 +82,9 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 	}
 
 	public void chunkLoaded(final ChunkPos pos) {
-		LevelChunk chunk = this.level.getChunkSource().getChunk(pos.x(), pos.z(), false);
-		if (chunk != null) {
-			chunk.findBlockLightSources((lightPos, state) -> {
-				if (this.isEmitter(state)) {
-					this.dirtySources.add(lightPos.asLong());
-				}
-			});
-		}
-
 		long chunkKey = pos.pack();
+		this.loadedChunks.add(chunkKey);
+		this.findEmitters(pos.x(), pos.z());
 		this.forEachSourceInColumnsAround(pos, source -> {
 			if (this.fields.get(source).isMissing(chunkKey)) {
 				this.dirtySources.add(source);
@@ -108,9 +104,32 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 		}
 
 		long chunkKey = pos.pack();
+		this.loadedChunks.remove(chunkKey);
 		this.chunkForgotten(chunkKey);
 		// Fills around it are redone if the chunk comes back
 		this.forEachSourceInColumnsAround(pos, source -> this.fields.get(source).addMissingChunk(chunkKey));
+	}
+
+	// What counts as an emitter changed (tags reloaded, option toggled): look for emitters in every loaded chunk again,
+	// and refill the current ones, which drops those that no longer count
+	public void rescan() {
+		LongIterator it = this.loadedChunks.iterator();
+		while (it.hasNext()) {
+			long chunkKey = it.nextLong();
+			this.findEmitters(ChunkPos.getX(chunkKey), ChunkPos.getZ(chunkKey));
+		}
+		this.dirtySources.addAll(this.fields.keySet());
+	}
+
+	private void findEmitters(final int chunkX, final int chunkZ) {
+		LevelChunk chunk = this.level.getChunkSource().getChunk(chunkX, chunkZ, false);
+		if (chunk != null) {
+			chunk.findBlockLightSources((lightPos, state) -> {
+				if (this.isEmitter(state)) {
+					this.dirtySources.add(lightPos.asLong());
+				}
+			});
+		}
 	}
 
 	public void update() {

@@ -1,5 +1,6 @@
 package dev.wifft.betterlight.mixin.client;
 
+import dev.wifft.betterlight.BetterlightClient;
 import dev.wifft.betterlight.config.BetterlightConfig;
 import java.util.function.Consumer;
 import net.minecraft.client.OptionInstance;
@@ -29,6 +30,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 	private boolean betterlight$oldSmoothEmitters;
 	@Unique
 	private boolean betterlight$oldExtendedPistonAo;
+	@Unique
+	private boolean betterlight$oldFrontEmitters;
+	@Unique
+	private boolean betterlight$oldDirectionalTorches;
 
 	private VideoSettingsScreenMixin(Screen lastScreen, Options options, Component title) {
 		super(lastScreen, options, title);
@@ -41,6 +46,8 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 		this.betterlight$oldSmoothNoAoModels = BetterlightConfig.smoothNoAoModels;
 		this.betterlight$oldSmoothEmitters = BetterlightConfig.smoothEmitters;
 		this.betterlight$oldExtendedPistonAo = BetterlightConfig.extendedPistonAo;
+		this.betterlight$oldFrontEmitters = BetterlightConfig.frontEmitters;
+		this.betterlight$oldDirectionalTorches = BetterlightConfig.directionalTorches;
 	}
 
 	@Inject(method = "addOptions", at = @At("TAIL"))
@@ -72,6 +79,10 @@ public abstract class VideoSettingsScreenMixin extends OptionsSubScreen {
 			if (levelExtractor != null) {
 				levelExtractor.allChanged();
 			}
+		}
+		if (BetterlightConfig.frontEmitters != this.betterlight$oldFrontEmitters
+			|| BetterlightConfig.directionalTorches != this.betterlight$oldDirectionalTorches) {
+			BetterlightClient.rescanEmitters();
 		}
 	}
 

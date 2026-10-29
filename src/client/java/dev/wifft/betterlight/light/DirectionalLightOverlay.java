@@ -3,7 +3,6 @@ package dev.wifft.betterlight.light;
 import static dev.wifft.betterlight.light.EmitterField.CENTER;
 import static dev.wifft.betterlight.light.EmitterField.VOLUME;
 
-import dev.wifft.betterlight.config.BetterlightConfig;
 import dev.wifft.betterlight.duck.BlockLightOverlayTarget;
 import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -20,19 +19,17 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.BaseTorchBlock;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.lighting.LightEngine;
 import org.jspecify.annotations.Nullable;
 
-// Client-only light of torches and lanterns that only reaches what the emitter can see.
+// Client-only light of the shadowed emitters (EmitterTags: torches, lanterns, campfires, glowstone...) that only
+// reaches what the emitter can see.
 // Each emitter gets a field with two values per cell: V, the vanilla light it casts (the engine's flood fill), and D, its
-// shadowed light: V where the cell is in line of sight from the emitter (EmitterBox.clearRays), elsewhere light spread
+// shadowed light: V where the cell is in line of sight from the emitter (EmitterBox.shade), elsewhere light spread
 // from the lit cells that loses INDIRECT_STEP per block, so light leaking through a gap stays a dim glow.
 // The engine still holds the vanilla light (the server sends it), so getLightValue takes it back out: if the engine is
 // brighter than the strongest V some other source lights the cell and the engine value stands, otherwise the cell shows
@@ -42,8 +39,7 @@ import org.jspecify.annotations.Nullable;
 // back to the vanilla value. The snapshot holds V << 4 | max(D, O).
 public final class DirectionalLightOverlay extends EmitterLightOverlay {
 	private static final Direction[] DIRECTIONS = Direction.values();
-	private static final int INDIRECT_STEP = 3;
-	private static final int PRUNE_MARGIN = INDIRECT_STEP;
+	private static final int PRUNE_MARGIN = EmitterBox.INDIRECT_STEP;
 	private final BlockLightOverlayTarget engine;
 	// Emitters whose chunk light hasn't arrived yet (the pruning reads it), by chunk
 	private final Long2ObjectMap<LongSet> waitingByChunk = new Long2ObjectOpenHashMap<>();
@@ -54,7 +50,6 @@ public final class DirectionalLightOverlay extends EmitterLightOverlay {
 	private final byte[] shadowed = new byte[VOLUME];
 	private final IntArrayList touched = new IntArrayList();
 	private final IntArrayFIFOQueue fillQueue = new IntArrayFIFOQueue();
-	private final IntArrayFIFOQueue[] fillBuckets = new IntArrayFIFOQueue[16];
 	// Scratch for merges: per-section arrays (zeroed when returned), and the chunk sections read
 	private final ArrayDeque<byte[]> sectionArrays = new ArrayDeque<>();
 	private final LongArrayFIFOQueue[] mergeBuckets = new LongArrayFIFOQueue[16];
@@ -64,17 +59,12 @@ public final class DirectionalLightOverlay extends EmitterLightOverlay {
 		super(level);
 		this.engine = engine;
 		for (int i = 0; i < 16; i++) {
-			this.fillBuckets[i] = new IntArrayFIFOQueue();
 			this.mergeBuckets[i] = new LongArrayFIFOQueue();
 		}
 	}
 
 	public static boolean isTracked(final BlockState state) {
-		if (!BetterlightConfig.directionalTorches) {
-			return false;
-		}
-		Block block = state.getBlock();
-		return (block instanceof BaseTorchBlock || block instanceof LanternBlock) && state.getLightEmission() > 0;
+		return EmitterTags.isShadowed(state);
 	}
 
 	@Override
@@ -186,50 +176,7 @@ public final class DirectionalLightOverlay extends EmitterLightOverlay {
 			}
 		}
 
-		// Direct light: cells the emitter fully sees keep the vanilla value; through a partly blocked way the emitter acts
-		// as a weaker one, losing the blocked fraction of its emission (half a slab halves its reach)
-		IntArrayFIFOQueue[] buckets = this.fillBuckets;
-		for (IntArrayFIFOQueue bucket : buckets) {
-			bucket.clear();
-		}
-		for (int i = 0; i < touched.size(); i++) {
-			int cell = touched.getInt(i);
-			int rays = cell == CENTER ? EmitterBox.RAYS : box.clearRays(cell);
-			int direct = vanilla[cell] - Math.round((float) ((EmitterBox.RAYS - rays) * emission) / EmitterBox.RAYS);
-			if (direct > 0) {
-				shadowed[cell] = (byte) direct;
-				buckets[direct].enqueue(cell);
-			}
-		}
-
-		// Indirect light: spreads from the lit cells (brightest first), never above the vanilla value
-		for (int bucketLevel = 15; bucketLevel > INDIRECT_STEP; bucketLevel--) {
-			IntArrayFIFOQueue bucket = buckets[bucketLevel];
-			while (!bucket.isEmpty()) {
-				int from = bucket.dequeueInt();
-				if (shadowed[from] != bucketLevel) {
-					continue;
-				}
-				int fx = EmitterField.localX(from);
-				int fy = EmitterField.localY(from);
-				int fz = EmitterField.localZ(from);
-
-				for (Direction direction : DIRECTIONS) {
-					int tx = fx + direction.getStepX();
-					int ty = fy + direction.getStepY();
-					int tz = fz + direction.getStepZ();
-					if (!EmitterField.inLocalBox(tx, ty, tz)) {
-						continue;
-					}
-					int to = EmitterField.index(tx, ty, tz);
-					int newLevel = Math.min(vanilla[to], bucketLevel - INDIRECT_STEP);
-					if (newLevel > shadowed[to]) {
-						shadowed[to] = (byte) newLevel;
-						buckets[newLevel].enqueue(to);
-					}
-				}
-			}
-		}
+		box.shade(vanilla, shadowed, touched, emission);
 
 		touched.sort(null);
 		int[] cells = new int[touched.size()];

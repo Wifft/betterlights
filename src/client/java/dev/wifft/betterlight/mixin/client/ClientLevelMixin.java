@@ -61,6 +61,12 @@ public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, Dire
 		return this.betterlight$directionalLight;
 	}
 
+	@Override
+	public void betterlight$rescanEmitters() {
+		this.betterlight$frontLight.rescan();
+		this.betterlight$directionalLight.rescan();
+	}
+
 	@Inject(method = "unload", at = @At("TAIL"))
 	private void betterlight$chunkUnloaded(LevelChunk levelChunk, CallbackInfo ci) {
 		this.betterlight$frontLight.chunkUnloaded(levelChunk.getPos());

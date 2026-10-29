@@ -18,11 +18,13 @@ import net.minecraft.world.level.lighting.LightEngine;
 
 // Client-only block light of front emitters (lit furnaces, jack o'lanterns), which the light engine ignores
 // (FrontEmitters.isFrontEmitter). Each one gets its own flood fill that never steps backwards, so it only lights the
-// half-space in front of it; the snapshot holds the max of the fills, merged (max) into the engine value.
+// half-space in front of it, shaded by line of sight like DirectionalLightOverlay (EmitterBox.shade); the snapshot
+// holds the max of the shaded fills, merged (max) into the engine value.
 public final class FrontLightOverlay extends EmitterLightOverlay {
 	private static final Direction[] DIRECTIONS = Direction.values();
-	// Scratch for fills: light in local coordinates, and the cells it touched
+	// Scratch for fills: light and its shadowed version (EmitterBox.shade) in local coordinates, and the cells they touched
 	private final byte[] light = new byte[VOLUME];
+	private final byte[] shadowed = new byte[VOLUME];
 	private final IntArrayList touched = new IntArrayList();
 	private final IntArrayFIFOQueue queue = new IntArrayFIFOQueue();
 
@@ -60,12 +62,15 @@ public final class FrontLightOverlay extends EmitterLightOverlay {
 			}
 		}
 
+		box.shade(this.light, this.shadowed, this.touched, sourceState.getLightEmission());
+
 		this.touched.sort(null);
 		int[] cells = new int[this.touched.size()];
 		for (int i = 0; i < cells.length; i++) {
 			int cell = this.touched.getInt(i);
-			cells[i] = cell << 8 | this.light[cell] << 4 | this.light[cell];
+			cells[i] = cell << 8 | this.light[cell] << 4 | this.shadowed[cell];
 			this.light[cell] = 0;
+			this.shadowed[cell] = 0;
 		}
 
 		EmitterField field = new EmitterField(source, cells);

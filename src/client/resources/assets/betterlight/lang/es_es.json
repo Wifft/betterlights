@@ -19,7 +19,7 @@
 	"betterlight.options.extendedPistonAo": "Sombra de pistones extendidos",
 	"betterlight.options.extendedPistonAo.tooltip": "La base de los pistones extendidos oscurece el terreno a su alrededor como un pistón recogido, en lugar de no proyectar oclusión ambiental.",
 	"betterlight.options.frontEmitters": "Hornos con luz delantera",
-	"betterlight.options.frontEmitters.tooltip": "Los hornos, ahumadores, altos hornos y calabazas de Halloween encendidos solo iluminan el espacio de delante. Se aplica al volver a entrar en el mundo.",
-	"betterlight.options.directionalTorches": "Antorchas con sombras",
-	"betterlight.options.directionalTorches.tooltip": "Las antorchas y los faroles solo iluminan del todo lo que ven; la luz que escapa por una rendija o dobla una esquina se apaga rápido. Se aplica al volver a entrar en el mundo."
+	"betterlight.options.frontEmitters.tooltip": "Los hornos, ahumadores, altos hornos y calabazas de Halloween encendidos (tag betterlight:front_emitters) solo iluminan lo que ven delante. La luz ya guardada en el mundo se actualiza cuando esos chunks se vuelven a iluminar.",
+	"betterlight.options.directionalTorches": "Luces con sombras",
+	"betterlight.options.directionalTorches.tooltip": "Las antorchas, faroles, hogueras, piedra luminosa y otras fuentes de luz (tag betterlight:shadowed_emitters) solo iluminan del todo lo que ven; la luz que escapa por una rendija o dobla una esquina se apaga rápido."
 }

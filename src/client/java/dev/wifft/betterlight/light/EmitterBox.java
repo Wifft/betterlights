@@ -5,11 +5,14 @@ import static dev.wifft.betterlight.light.EmitterField.RADIUS;
 import static dev.wifft.betterlight.light.EmitterField.SIDE;
 import static dev.wifft.betterlight.light.EmitterField.VOLUME;
 
+import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.Map;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +20,7 @@ import net.minecraft.world.phys.AABB;
 
 /**
  * The box of RADIUS around the emitter being filled: block states read lazily in local coordinates (valid where
- * stamp == generation, so starting a fill clears nothing), and line of sight through it for DirectionalLightOverlay.
+ * stamp == generation, so starting a fill clears nothing), and the shading of a fill by line of sight through it.
  */
 final class EmitterBox {
 	// Line of sight is tested with one ray per octant, from a corner of a cube spread over the emitter's block to the
@@ -25,7 +28,12 @@ final class EmitterBox {
 	// that passes is how open the way is: half a slab across a gap stops about half the rays
 	static final int RAYS = 8;
 	private static final double SOURCE_SPREAD = 0.35;
+	// Blocks that glow all over (glowstone, sea lanterns, furnaces...) send light from their whole surface
+	private static final double FULL_BLOCK_SOURCE_SPREAD = 0.49;
 	private static final double TARGET_SPREAD = 0.4;
+	// Light the emitter doesn't see directly loses this much per block
+	static final int INDIRECT_STEP = 3;
+	private static final Direction[] DIRECTIONS = Direction.values();
 	// Cell classes for the rays
 	private static final byte CLEAR = 0;
 	private static final byte OPAQUE = 1;
@@ -41,15 +49,21 @@ final class EmitterBox {
 	private int originX;
 	private int originY;
 	private int originZ;
+	private double sourceSpread;
+	private final IntArrayFIFOQueue[] buckets = new IntArrayFIFOQueue[16];
 
 	EmitterBox(final ClientLevel level) {
 		this.level = level;
+		for (int i = 0; i < this.buckets.length; i++) {
+			this.buckets[i] = new IntArrayFIFOQueue();
+		}
 	}
 
 	void begin(final BlockPos source, final BlockState sourceState) {
 		this.originX = source.getX() - RADIUS;
 		this.originY = source.getY() - RADIUS;
 		this.originZ = source.getZ() - RADIUS;
+		this.sourceSpread = sourceState.isSolidRender() ? FULL_BLOCK_SOURCE_SPREAD : SOURCE_SPREAD;
 		if (++this.generation == 0) {
 			Arrays.fill(this.stamps, 0);
 			this.generation = 1;
@@ -80,8 +94,55 @@ final class EmitterBox {
 		}
 	}
 
+	// D from V (both in local coordinates) for the cells a fill touched: cells the emitter fully sees keep V; through a
+	// partly blocked way the emitter acts as a weaker one, losing the blocked fraction of its emission (half a slab
+	// halves its reach); elsewhere light spreads from the lit cells (brightest first), never above V
+	void shade(final byte[] vanilla, final byte[] shadowed, final IntArrayList touched, final int emission) {
+		IntArrayFIFOQueue[] buckets = this.buckets;
+		for (IntArrayFIFOQueue bucket : buckets) {
+			bucket.clear();
+		}
+		for (int i = 0; i < touched.size(); i++) {
+			int cell = touched.getInt(i);
+			int rays = cell == CENTER ? RAYS : this.clearRays(cell);
+			int direct = vanilla[cell] - Math.round((float) ((RAYS - rays) * emission) / RAYS);
+			if (direct > 0) {
+				shadowed[cell] = (byte) direct;
+				buckets[direct].enqueue(cell);
+			}
+		}
+
+		for (int bucketLevel = 15; bucketLevel > INDIRECT_STEP; bucketLevel--) {
+			IntArrayFIFOQueue bucket = buckets[bucketLevel];
+			while (!bucket.isEmpty()) {
+				int from = bucket.dequeueInt();
+				if (shadowed[from] != bucketLevel) {
+					continue;
+				}
+				int fx = EmitterField.localX(from);
+				int fy = EmitterField.localY(from);
+				int fz = EmitterField.localZ(from);
+
+				for (Direction direction : DIRECTIONS) {
+					int tx = fx + direction.getStepX();
+					int ty = fy + direction.getStepY();
+					int tz = fz + direction.getStepZ();
+					if (!EmitterField.inLocalBox(tx, ty, tz)) {
+						continue;
+					}
+					int to = EmitterField.index(tx, ty, tz);
+					int newLevel = Math.min(vanilla[to], bucketLevel - INDIRECT_STEP);
+					if (newLevel > shadowed[to]) {
+						shadowed[to] = (byte) newLevel;
+						buckets[newLevel].enqueue(to);
+					}
+				}
+			}
+		}
+	}
+
 	// How many of the RAYS from the emitter's block reach the target cell, skipping the first and last cell of each
-	int clearRays(final int target) {
+	private int clearRays(final int target) {
 		int x = EmitterField.localX(target);
 		int y = EmitterField.localY(target);
 		int z = EmitterField.localZ(target);
@@ -91,7 +152,7 @@ final class EmitterBox {
 			double oy = (ray & 2) == 0 ? -1 : 1;
 			double oz = (ray & 4) == 0 ? -1 : 1;
 			if (this.segmentClear(
-				RADIUS + 0.5 + ox * SOURCE_SPREAD, RADIUS + 0.5 + oy * SOURCE_SPREAD, RADIUS + 0.5 + oz * SOURCE_SPREAD,
+				RADIUS + 0.5 + ox * this.sourceSpread, RADIUS + 0.5 + oy * this.sourceSpread, RADIUS + 0.5 + oz * this.sourceSpread,
 				x + 0.5 + ox * TARGET_SPREAD, y + 0.5 + oy * TARGET_SPREAD, z + 0.5 + oz * TARGET_SPREAD
 			)) {
 				count++;

@@ -64,6 +64,12 @@ public class FrontEmitterLightTest {
 		torchReplacedBy(helper, JACK_O_LANTERN);
 	}
 
+	// Front emitters come from the betterlight:front_emitters tag
+	@GameTest
+	public void taggedSmokerRemovesTorchLight(GameTestHelper helper) {
+		torchReplacedBy(helper, Blocks.SMOKER.defaultBlockState().setValue(AbstractFurnaceBlock.FACING, Direction.SOUTH).setValue(AbstractFurnaceBlock.LIT, true));
+	}
+
 	private static void torchReplacedBy(GameTestHelper helper, BlockState emitter) {
 		TestWorld world = new TestWorld();
 		world.set(SOURCE, Blocks.TORCH.defaultBlockState());

@@ -19,7 +19,7 @@
 	"betterlight.options.extendedPistonAo": "Extended Piston Shadows",
 	"betterlight.options.extendedPistonAo.tooltip": "Extended piston bases darken the terrain around them like retracted pistons do, instead of casting no ambient occlusion.",
 	"betterlight.options.frontEmitters": "Front-Lit Furnaces",
-	"betterlight.options.frontEmitters.tooltip": "Lit furnaces, smokers, blast furnaces and jack o'lanterns only light the space in front of them. Applies when re-entering the world.",
-	"betterlight.options.directionalTorches": "Shadowed Torches",
-	"betterlight.options.directionalTorches.tooltip": "Torches and lanterns fully light only what they can see; light escaping through a gap or around a corner fades quickly. Applies when re-entering the world."
+	"betterlight.options.frontEmitters.tooltip": "Lit furnaces, smokers, blast furnaces and jack o'lanterns (tag betterlight:front_emitters) only light what they can see in front of them. Light already stored by the world updates when those chunks are relit.",
+	"betterlight.options.directionalTorches": "Shadowed Light Sources",
+	"betterlight.options.directionalTorches.tooltip": "Torches, lanterns, campfires, glowstone and other light sources (tag betterlight:shadowed_emitters) fully light only what they can see; light escaping through a gap or around a corner fades quickly."
 }
