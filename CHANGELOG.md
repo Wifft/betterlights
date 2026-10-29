@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 — 2026-10-29
+
+- Actualizado a Minecraft 26.4-snapshot-6 y Fabric API 0.165.1.
+
 ## 0.2.0 — 2026-10-29
 
 ### Novedades

@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Betterlight is a Fabric mod for Minecraft `26.4-snapshot-5` (Java 25, Mojang mappings) that unifies lighting: smooth light on fluids, non-AO models and emitters, per-vertex light on block entities / item frames / paintings, interpolated entity light, front-only light for lit furnaces and jack o'lanterns, and directional face shading moved from the CPU into the shaders. The README is in Spanish; code comments are in English.
+Betterlight is a Fabric mod for Minecraft `26.4-snapshot-6` (Java 25, Mojang mappings) that unifies lighting: smooth light on fluids, non-AO models and emitters, per-vertex light on block entities / item frames / paintings, interpolated entity light, front-only light for lit furnaces and jack o'lanterns, and directional face shading moved from the CPU into the shaders. The README is in Spanish; code comments are in English.
 
 ## Commands
 

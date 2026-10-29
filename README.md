@@ -1,6 +1,6 @@
 # Betterlight
 
-Mod de Fabric para Minecraft 26.4-snapshot-5 que unifica la iluminación:
+Mod de Fabric para Minecraft 26.4-snapshot-6 que unifica la iluminación:
 - Luz suave en fluidos, en modelos sin oclusión ambiental (raíles, plantas, carteles…) y en bloques que emiten luz (portal del Nether).
 - Luz por vértice en bloques con entidad, marcos y cuadros, y luz interpolada en entidades.
 - Hornos y calabazas de Halloween encendidos que solo iluminan por delante.
