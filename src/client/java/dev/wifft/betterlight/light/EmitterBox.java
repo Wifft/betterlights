@@ -23,10 +23,17 @@ import net.minecraft.world.phys.AABB;
  * stamp == generation, so starting a fill clears nothing), and the shading of a fill by line of sight through it.
  */
 final class EmitterBox {
-	// Line of sight is tested with one ray per octant, from a corner of a cube spread over the emitter's block to the
-	// same corner of a slightly bigger one in the target cell (so the floor is judged from just above it). The fraction
-	// that passes is how open the way is: half a slab across a gap stops about half the rays
-	static final int RAYS = 8;
+	// Line of sight is tested with one vertical sheet per corner of the horizontal square, from an edge of a cube spread
+	// over the emitter's block to the same edge of a slightly bigger one in the target cell (so the floor is judged from
+	// just above it, or above the layer the target holds). Each sheet is BINS rays stacked from the bottom to the top of
+	// the source; the fraction that passes is how open the way is. Full blocks and other shapes are tested with the
+	// sheet's two edge rays, each one standing for its half; layers (snow, slabs) with every ray, so each snow layer in
+	// front of the emitter hides a bit more of it
+	private static final int SHEETS = 4;
+	private static final int BINS = 16;
+	private static final int LOWER_BINS = (1 << BINS / 2) - 1;
+	private static final int UPPER_BINS = LOWER_BINS << BINS / 2;
+	private static final int ALL_BINS = LOWER_BINS | UPPER_BINS;
 	private static final double SOURCE_SPREAD = 0.35;
 	// Blocks that glow all over (glowstone, sea lanterns, furnaces...) send light from their whole surface
 	private static final double FULL_BLOCK_SOURCE_SPREAD = 0.49;
@@ -38,10 +45,16 @@ final class EmitterBox {
 	private static final byte CLEAR = 0;
 	private static final byte OPAQUE = 1;
 	private static final byte SHAPED = 2;
+	// One box over the whole footprint, from the bottom (snow layers, bottom slabs) or from the top (top slabs), up to
+	// or down from cellHeights
+	private static final byte FLOOR = 3;
+	private static final byte CEILING = 4;
+	private static final double FLUSH = 1.0E-3;
 
 	private final ClientLevel level;
 	private final BlockState[] states = new BlockState[VOLUME];
 	private final byte[] cellClasses = new byte[VOLUME];
+	private final float[] cellHeights = new float[VOLUME];
 	private final int[] stamps = new int[VOLUME];
 	private int generation;
 	private final Map<BlockState, AABB[]> occlusionBoxes = new Reference2ObjectOpenHashMap<>();
@@ -96,7 +109,8 @@ final class EmitterBox {
 
 	// D from V (both in local coordinates) for the cells a fill touched: cells the emitter fully sees keep V; through a
 	// partly blocked way the emitter acts as a weaker one, losing the blocked fraction of its emission (half a slab
-	// halves its reach); elsewhere light spreads from the lit cells (brightest first), never above V
+	// halves its reach, and every snow layer piled in front shortens it a bit more); elsewhere light spreads from the
+	// lit cells (brightest first), never above V
 	void shade(final byte[] vanilla, final byte[] shadowed, final IntArrayList touched, final int emission) {
 		IntArrayFIFOQueue[] buckets = this.buckets;
 		for (IntArrayFIFOQueue bucket : buckets) {
@@ -104,8 +118,8 @@ final class EmitterBox {
 		}
 		for (int i = 0; i < touched.size(); i++) {
 			int cell = touched.getInt(i);
-			int rays = cell == CENTER ? RAYS : this.clearRays(cell);
-			int direct = vanilla[cell] - Math.round((float) ((RAYS - rays) * emission) / RAYS);
+			float openness = cell == CENTER ? 1.0F : this.openness(cell);
+			int direct = vanilla[cell] - Math.round((1.0F - openness) * emission);
 			if (direct > 0) {
 				shadowed[cell] = (byte) direct;
 				buckets[direct].enqueue(cell);
@@ -141,24 +155,120 @@ final class EmitterBox {
 		}
 	}
 
-	// How many of the RAYS from the emitter's block reach the target cell, skipping the first and last cell of each
-	private int clearRays(final int target) {
+	// The fraction of the sheets' rays from the emitter's block that reach the target cell, skipping the first and last
+	// cell of each
+	private float openness(final int target) {
 		int x = EmitterField.localX(target);
 		int y = EmitterField.localY(target);
 		int z = EmitterField.localZ(target);
-		int count = 0;
-		for (int ray = 0; ray < RAYS; ray++) {
-			double ox = (ray & 1) == 0 ? -1 : 1;
-			double oy = (ray & 2) == 0 ? -1 : 1;
-			double oz = (ray & 4) == 0 ? -1 : 1;
-			if (this.segmentClear(
-				RADIUS + 0.5 + ox * this.sourceSpread, RADIUS + 0.5 + oy * this.sourceSpread, RADIUS + 0.5 + oz * this.sourceSpread,
-				x + 0.5 + ox * TARGET_SPREAD, y + 0.5 + oy * TARGET_SPREAD, z + 0.5 + oz * TARGET_SPREAD
-			)) {
-				count++;
+		double sourceLow = RADIUS + 0.5 - this.sourceSpread;
+		double sourceHigh = RADIUS + 0.5 + this.sourceSpread;
+		double targetLow = y + 0.5 - TARGET_SPREAD;
+		double targetHigh = y + 0.5 + TARGET_SPREAD;
+		// A layer in the target is judged from its surface, which is what its light shows
+		byte targetClass = this.cellClass(x, y, z);
+		if (targetClass == FLOOR) {
+			targetLow = Math.min(y + 1 - (1 - this.cellHeights[target]) * (0.5 + TARGET_SPREAD), targetHigh);
+		} else if (targetClass == CEILING) {
+			targetHigh = Math.max(y + this.cellHeights[target] * (0.5 + TARGET_SPREAD), targetLow);
+		}
+
+		int open = 0;
+		for (int sheet = 0; sheet < SHEETS; sheet++) {
+			double ox = (sheet & 1) == 0 ? -1 : 1;
+			double oz = (sheet & 2) == 0 ? -1 : 1;
+			double fromX = RADIUS + 0.5 + ox * this.sourceSpread;
+			double fromZ = RADIUS + 0.5 + oz * this.sourceSpread;
+			double toX = x + 0.5 + ox * TARGET_SPREAD;
+			double toZ = z + 0.5 + oz * TARGET_SPREAD;
+			int blocked = 0;
+			if (!this.segmentClear(fromX, sourceLow, fromZ, toX, targetLow, toZ)) {
+				blocked |= LOWER_BINS;
+			}
+			if (!this.segmentClear(fromX, sourceHigh, fromZ, toX, targetHigh, toZ)) {
+				blocked |= UPPER_BINS;
+			}
+			if (blocked != ALL_BINS) {
+				blocked = this.layerBins(blocked, fromX, fromZ, toX, toZ, sourceLow, sourceHigh, targetLow, targetHigh, x, z);
+			}
+			open += BINS - Integer.bitCount(blocked);
+		}
+		return (float) open / (SHEETS * BINS);
+	}
+
+	// Adds the rays of a sheet that cross FLOOR or CEILING layers, walking the columns under the sheet (skipping the
+	// emitter's and the target's)
+	private int layerBins(
+		int blocked, final double fromX, final double fromZ, final double toX, final double toZ,
+		final double sourceLow, final double sourceHigh, final double targetLow, final double targetHigh, final int endX, final int endZ
+	) {
+		double dx = toX - fromX;
+		double dz = toZ - fromZ;
+		int x = (int) Math.floor(fromX);
+		int z = (int) Math.floor(fromZ);
+		int stepX = dx > 0 ? 1 : -1;
+		int stepZ = dz > 0 ? 1 : -1;
+		double deltaX = dx != 0 ? Math.abs(1 / dx) : Double.POSITIVE_INFINITY;
+		double deltaZ = dz != 0 ? Math.abs(1 / dz) : Double.POSITIVE_INFINITY;
+		double nextX = dx != 0 ? (dx > 0 ? x + 1 - fromX : fromX - x) * deltaX : Double.POSITIVE_INFINITY;
+		double nextZ = dz != 0 ? (dz > 0 ? z + 1 - fromZ : fromZ - z) * deltaZ : Double.POSITIVE_INFINITY;
+
+		double tIn = 0.0;
+		for (int steps = 0; steps < 2 * SIDE; steps++) {
+			double tOut = Math.min(Math.min(nextX, nextZ), 1.0);
+			if ((x != RADIUS || z != RADIUS) && (x != endX || z != endZ)) {
+				blocked = this.columnBins(
+					blocked, x, z,
+					sourceLow + (targetLow - sourceLow) * tIn, sourceHigh + (targetHigh - sourceHigh) * tIn,
+					sourceLow + (targetLow - sourceLow) * tOut, sourceHigh + (targetHigh - sourceHigh) * tOut
+				);
+				if (blocked == ALL_BINS) {
+					return blocked;
+				}
+			}
+			if (tOut >= 1.0) {
+				return blocked;
+			}
+
+			if (nextX <= nextZ) {
+				x += stepX;
+				nextX += deltaX;
+			} else {
+				z += stepZ;
+				nextZ += deltaZ;
+			}
+			if (!EmitterField.inLocalBox(x, RADIUS, z)) {
+				return blocked;
+			}
+			tIn = tOut;
+		}
+		return blocked;
+	}
+
+	// Adds the rays of a sheet that cross a layer in one column, given the heights of the sheet's lower and upper edge
+	// where it enters and leaves it. Rays are straight lines, so within a column each spans the heights between its
+	// entry and exit
+	private int columnBins(int blocked, final int x, final int z, final double lowIn, final double highIn, final double lowOut, final double highOut) {
+		int minY = Math.max((int) Math.floor(Math.min(lowIn, lowOut)), 0);
+		int maxY = Math.min((int) Math.floor(Math.max(highIn, highOut)), SIDE - 1);
+		for (int y = minY; y <= maxY; y++) {
+			byte cellClass = this.cellClass(x, y, z);
+			if (cellClass != FLOOR && cellClass != CEILING) {
+				continue;
+			}
+			float height = this.cellHeights[EmitterField.index(x, y, z)];
+			double bottom = cellClass == FLOOR ? y : y + height;
+			double top = cellClass == FLOOR ? y + height : y + 1;
+			for (int bin = 0; bin < BINS; bin++) {
+				double u = (bin + 0.5) / BINS;
+				double in = lowIn + (highIn - lowIn) * u;
+				double out = lowOut + (highOut - lowOut) * u;
+				if (Math.min(in, out) < top && Math.max(in, out) > bottom) {
+					blocked |= 1 << bin;
+				}
 			}
 		}
-		return count;
+		return blocked;
 	}
 
 	// Walks the cells crossed by the segment, skipping the first and last cell
@@ -207,8 +317,8 @@ final class EmitterBox {
 		return true;
 	}
 
-	// Whether the segment crosses the occlusion shape of a SHAPED cell (slabs, stairs...: the blocks the engine occludes
-	// light with by shape). The boxes are shrunk a little so a segment grazing a face passes
+	// Whether the segment crosses the occlusion shape of a SHAPED cell (stairs...: the blocks the engine occludes light
+	// with by shape, other than layers). The boxes are shrunk a little so a segment grazing a face passes
 	private boolean crossesShape(final int x, final int y, final int z, final double fromX, final double fromY, final double fromZ, final double dx, final double dy, final double dz) {
 		double px = fromX - x;
 		double py = fromY - y;
@@ -268,7 +378,28 @@ final class EmitterBox {
 
 	private void setState(final int index, final BlockState state) {
 		this.states[index] = state;
-		this.cellClasses[index] = state.getLightDampening() >= 15 ? OPAQUE : state.canOcclude() && state.useShapeForLightOcclusion() ? SHAPED : CLEAR;
+		byte cellClass = CLEAR;
+		float height = 0.0F;
+		if (state.getLightDampening() >= 15) {
+			cellClass = OPAQUE;
+		} else if (state.canOcclude() && state.useShapeForLightOcclusion()) {
+			cellClass = SHAPED;
+			AABB[] boxes = this.occlusionBoxes.computeIfAbsent(state, EmitterBox::shrunkOcclusionBoxes);
+			if (boxes.length == 1) {
+				AABB box = boxes[0];
+				if (box.minX < FLUSH && box.maxX > 1 - FLUSH && box.minZ < FLUSH && box.maxZ > 1 - FLUSH) {
+					if (box.minY < FLUSH) {
+						cellClass = FLOOR;
+						height = (float) box.maxY;
+					} else if (box.maxY > 1 - FLUSH) {
+						cellClass = CEILING;
+						height = (float) box.minY;
+					}
+				}
+			}
+		}
+		this.cellClasses[index] = cellClass;
+		this.cellHeights[index] = height;
 		this.stamps[index] = this.generation;
 	}
 }

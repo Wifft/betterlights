@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 — 2026-10-29
+
+- **Nieve en las luces con sombras.** Las capas de nieve tapan la luz poco a poco según su altura: una capa ya no corta la mitad de la luz de una antorcha, y cada capa más acorta un poco su alcance. Las losas tapan de forma más gradual, y la superficie de la nieve o de una losa se ilumina según lo que ve desde arriba.
+
 ## 0.2.1 — 2026-10-29
 
 - Compatible con Minecraft 26.4-snapshot-6 (antes 26.4-snapshot-5), con Fabric API 0.165.1.
