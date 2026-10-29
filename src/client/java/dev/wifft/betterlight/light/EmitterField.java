@@ -84,9 +84,12 @@ final class EmitterField {
 		return Math.abs(x - this.x) <= RADIUS && Math.abs(y - this.y) <= RADIUS && Math.abs(z - this.z) <= RADIUS;
 	}
 
-	// Whether the fill reached pos or one of its neighbours, the only fills a block change there can alter
+	// Whether the fill reached pos or one of its neighbours, the only fills a block change there can alter. The
+	// source's neighbours always count: a front emitter's own block stays dark, so a fill walled in at its front has
+	// no cells at all
 	boolean reaches(final BlockPos pos) {
-		if (this.vanillaAt(pos.getX(), pos.getY(), pos.getZ()) > 0) {
+		if (Math.abs(pos.getX() - this.x) + Math.abs(pos.getY() - this.y) + Math.abs(pos.getZ() - this.z) <= 1
+			|| this.vanillaAt(pos.getX(), pos.getY(), pos.getZ()) > 0) {
 			return true;
 		}
 

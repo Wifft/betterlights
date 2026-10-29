@@ -3,6 +3,7 @@
 ## 0.2.2 — 2026-10-29
 
 - **Nieve en las luces con sombras.** Las capas de nieve tapan la luz poco a poco según su altura: una capa ya no corta la mitad de la luz de una antorcha, y cada capa más acorta un poco su alcance. Las losas tapan de forma más gradual, y la superficie de la nieve o de una losa se ilumina según lo que ve desde arriba.
+- Corregido: al romper un bloque que tapaba la cara delantera de un horno o una calabaza encendidos, la luz no volvía.
 
 ## 0.2.1 — 2026-10-29
 
