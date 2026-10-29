@@ -1,7 +1,9 @@
 package dev.wifft.betterlight.mixin.client;
 
 import dev.wifft.betterlight.duck.BlockLightOverlayTarget;
+import dev.wifft.betterlight.duck.ClientTickCounter;
 import dev.wifft.betterlight.duck.DirectionalLightHolder;
+import java.util.function.BooleanSupplier;
 import dev.wifft.betterlight.duck.MovingBlockShadowsHolder;
 import dev.wifft.betterlight.light.DirectionalLightOverlay;
 import dev.wifft.betterlight.light.FrontLightOverlay;
@@ -27,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * light engine. Also owns the level's MovingBlockShadows, updated once per frame.
  */
 @Mixin(ClientLevel.class)
-public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, DirectionalLightHolder {
+public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, DirectionalLightHolder, ClientTickCounter {
 	@Shadow
 	@Final
 	private ClientChunkCache chunkSource;
@@ -38,6 +40,8 @@ public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, Dire
 	private DirectionalLightOverlay betterlight$directionalLight;
 	@Unique
 	private MovingBlockShadows betterlight$movingBlockShadows;
+	@Unique
+	private long betterlight$clientTicks;
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void betterlight$createFrontLight(CallbackInfo ci) {
@@ -65,6 +69,21 @@ public abstract class ClientLevelMixin implements MovingBlockShadowsHolder, Dire
 	public void betterlight$rescanEmitters() {
 		this.betterlight$frontLight.rescan();
 		this.betterlight$directionalLight.rescan();
+	}
+
+	@Override
+	public long betterlight$clientTicks() {
+		return this.betterlight$clientTicks;
+	}
+
+	@Inject(method = "tick", at = @At("HEAD"))
+	private void betterlight$countTick(BooleanSupplier haveTime, CallbackInfo ci) {
+		this.betterlight$clientTicks++;
+	}
+
+	@Override
+	public void betterlight$chunkReplaced(ChunkPos pos) {		this.betterlight$frontLight.chunkUnloaded(pos);
+		this.betterlight$directionalLight.chunkUnloaded(pos);
 	}
 
 	@Inject(method = "unload", at = @At("TAIL"))

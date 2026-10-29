@@ -26,7 +26,7 @@ public record LightField(int[] cells, float originX, float originY, float origin
 
 	// Cells around pos, captured at most once per game tick for the object owning the cache
 	public static int[] cachedCells(final Level level, final BlockPos pos, final LightCellCache cache) {
-		long gameTime = level.getGameTime();
+		long gameTime = LightCellCache.tick(level);
 		long key = pos.asLong();
 		int[] cells = cache.get(gameTime, key, 0);
 		return cells != null ? cells : cache.put(gameTime, key, 0, captureCells(level, pos));

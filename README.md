@@ -34,6 +34,8 @@ export JAVA_HOME=/c/Users/wifft/.jdks/jdk-25.0.4.1+1
 
 - **Indigo (Fabric API)**: Fabric API desvía el mallado de bloques del terreno a Indigo (`AltModelBlockRendererImpl`), así que la luz y el sombreado de los bloques se enganchan a clases **internas** de Indigo (`Indigo*Mixin`). Con Sodium u otro renderer que sustituya a Indigo, esa parte no se aplica.
 - El agua sigue pasando por el `FluidRenderer` de vanilla.
+- **Shaders**: el mod sustituye `include/light.glsl`, `core/terrain.vsh` y `core/block.vsh`, y añade dos vec4 al UBO `Lighting` y una normal al formato de vértice de los bloques. Un pack de recursos que sobrescriba esos shaders, o un mod que dibuje con los pipelines de terreno usando `DefaultVertexFormat.BLOCK` a mano, rompe el terreno.
+- **Servidores**: los hornos con luz delantera necesitan el mod también en el servidor. En un servidor con Betterlight manda su opción y la del cliente se ignora.
 
 ## Portar a una versión nueva
 

@@ -90,10 +90,21 @@ public final class DirectionalLightOverlay extends EmitterLightOverlay {
 		return isTracked(state);
 	}
 
-	// An emission change moves the pruning of every field around it; an opacity change only fills that reach it
+	// An emission change moves the pruning of every field its light reaches, up to RADIUS outside the field's box (a
+	// light removed there leaves cells the field skipped showing the vanilla value); an opacity change only fills that
+	// reach it
 	@Override
 	protected boolean isAffected(final EmitterField field, final BlockPos pos, final BlockState oldState, final BlockState newState) {
-		return oldState.getLightEmission() != newState.getLightEmission() ? field.inBox(pos.getX(), pos.getY(), pos.getZ()) : field.reaches(pos);
+		int emission = Math.max(oldState.getLightEmission(), newState.getLightEmission());
+		return oldState.getLightEmission() != newState.getLightEmission()
+			? field.nearBox(pos.getX(), pos.getY(), pos.getZ(), emission - 1)
+			: field.reaches(pos);
+	}
+
+	// A field's box spans RADIUS around its source, and an emission change reaches up to 14 blocks further
+	@Override
+	protected int affectedSectionRadius(final BlockState oldState, final BlockState newState) {
+		return oldState.getLightEmission() != newState.getLightEmission() ? 2 : 1;
 	}
 
 	// The light of the other sources (O) can change up to 15 blocks away

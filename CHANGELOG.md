@@ -4,6 +4,11 @@
 
 - **Nieve en las luces con sombras.** Las capas de nieve tapan la luz poco a poco según su altura: una capa ya no corta la mitad de la luz de una antorcha, y cada capa más acorta un poco su alcance. Las losas tapan de forma más gradual, y la superficie de la nieve o de una losa se ilumina según lo que ve desde arriba.
 - Corregido: al romper un bloque que tapaba la cara delantera de un horno o una calabaza encendidos, la luz no volvía.
+- **Carga más rápida.** Al entrar en un mundo o una zona con muchas luces, el cálculo de las sombras recibe más tiempo por frame y se va mostrando a medida que avanza, en lugar de verse la luz de vanilla hasta el final. Una cuadrícula de 150×150 antorchas está lista en unos 5 segundos.
+- Corregido: al quitar una luz a más de 14 bloques de una antorcha, la luz de esa antorcha podía atravesar paredes.
+- Corregido: si el servidor volvía a enviar un chunk ya cargado (plugins como WorldEdit), quedaba luz de antorchas que ya no existían.
+- En un servidor con el mod, los hornos con luz delantera siguen al servidor y no a la opción del cliente; antes, con opciones distintas, los hornos podían quedarse sin luz.
+- Corregido: con `/tick freeze`, la luz de los bloques con entidad, los marcos y los cuadros no se actualizaba.
 
 ## 0.2.1 — 2026-10-29
 

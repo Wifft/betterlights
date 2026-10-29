@@ -1,10 +1,17 @@
 package dev.wifft.betterlight.light;
 
+import dev.wifft.betterlight.duck.ClientTickCounter;
+import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 // Light cells captured for one object, reused for the rest of the game tick: extraction runs every frame, but light
 // changes at most once per tick in practice. A recapture stores a new array, so render states holding the old one never see it change.
 public final class LightCellCache {
+	// The tick the cache is keyed by: client ticks, which keep counting while the game time is frozen (/tick freeze)
+	public static long tick(final Level level) {
+		return level instanceof ClientTickCounter counter ? counter.betterlight$clientTicks() : level.getGameTime();
+	}
+
 	private int @Nullable [] cells;
 	private long gameTime;
 	private long key;

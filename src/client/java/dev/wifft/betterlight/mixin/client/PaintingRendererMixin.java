@@ -56,7 +56,7 @@ public abstract class PaintingRendererMixin {
 		Level level = entity.level();
 		// The ring depends on the block, the facing and the size; reused for the rest of the tick
 		LightCellCache cache = LightCellCacheHolder.of(entity);
-		long gameTime = level.getGameTime();
+		long gameTime = LightCellCache.tick(level);
 		long key = entity.blockPosition().asLong();
 		int extra = direction.ordinal() << 16 | width << 8 | height;
 		int[] cached = cache.get(gameTime, key, extra);

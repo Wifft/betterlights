@@ -57,6 +57,9 @@ final class EmitterBox {
 	private final float[] cellHeights = new float[VOLUME];
 	private final int[] stamps = new int[VOLUME];
 	private int generation;
+	// Whether a FLOOR or CEILING cell has been read in this fill: the flood fill reads every lit cell and its neighbours,
+	// so without one the sheets' layer walks can be skipped
+	private boolean hasLayers;
 	private final Map<BlockState, AABB[]> occlusionBoxes = new Reference2ObjectOpenHashMap<>();
 	private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 	private int originX;
@@ -77,6 +80,7 @@ final class EmitterBox {
 		this.originY = source.getY() - RADIUS;
 		this.originZ = source.getZ() - RADIUS;
 		this.sourceSpread = sourceState.isSolidRender() ? FULL_BLOCK_SOURCE_SPREAD : SOURCE_SPREAD;
+		this.hasLayers = false;
 		if (++this.generation == 0) {
 			Arrays.fill(this.stamps, 0);
 			this.generation = 1;
@@ -188,7 +192,7 @@ final class EmitterBox {
 			if (!this.segmentClear(fromX, sourceHigh, fromZ, toX, targetHigh, toZ)) {
 				blocked |= UPPER_BINS;
 			}
-			if (blocked != ALL_BINS) {
+			if (blocked != ALL_BINS && this.hasLayers) {
 				blocked = this.layerBins(blocked, fromX, fromZ, toX, toZ, sourceLow, sourceHigh, targetLow, targetHigh, x, z);
 			}
 			open += BINS - Integer.bitCount(blocked);
@@ -400,6 +404,7 @@ final class EmitterBox {
 		}
 		this.cellClasses[index] = cellClass;
 		this.cellHeights[index] = height;
+		this.hasLayers |= cellClass == FLOOR || cellClass == CEILING;
 		this.stamps[index] = this.generation;
 	}
 }

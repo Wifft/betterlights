@@ -34,6 +34,7 @@ public final class EmitterTags {
 	public static final TagKey<Block> SHADOWED = tag("shadowed_emitters");
 	public static final TagKey<Block> FRONT = tag("front_emitters");
 	private static volatile Set<Block> shadowedFallback = Collections.emptySet();
+	private static volatile boolean frontFollowsServer;
 
 	private EmitterTags() {
 	}
@@ -48,7 +49,14 @@ public final class EmitterTags {
 
 	// Lit by its front only: also needs the facing that tells which side is the front
 	public static boolean isFront(final BlockState state) {
-		return BetterlightConfig.frontEmitters && state.is(FRONT) && state.hasProperty(HorizontalDirectionalBlock.FACING) && state.getLightEmission() > 0;
+		return (BetterlightConfig.frontEmitters || frontFollowsServer)
+			&& state.is(FRONT) && state.hasProperty(HorizontalDirectionalBlock.FACING) && state.getLightEmission() > 0;
+	}
+
+	// On a remote server with the mod (the only one that sends the front tag) the server's engine already leaves front
+	// emitters dark, so the client lights them whatever its own option says; set by the client on every tag sync
+	public static void setFrontFollowsServer(final boolean followsServer) {
+		frontFollowsServer = followsServer;
 	}
 
 	// After tags are synced: the bundled list when the server didn't send the tag, nothing otherwise

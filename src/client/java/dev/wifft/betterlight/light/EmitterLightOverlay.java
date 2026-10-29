@@ -25,6 +25,10 @@ import org.jspecify.annotations.Nullable;
 abstract class EmitterLightOverlay implements BlockLightOverlay {
 	private static final int MERGE_BATCH = 16;
 	private static final long BUDGET_NANOS = 3_000_000L;
+	// A batch this big (joining a world, loading a dense area) gets more time per frame, so it's done in a few seconds
+	private static final int BIG_BATCH = 1000;
+	private static final long BIG_BATCH_BUDGET_NANOS = 8_000_000L;
+	private static final int MERGE_INTERVAL = 20;
 	protected final ClientLevel level;
 	protected final SectionLightSnapshot snapshot;
 	protected final EmitterBox box;
@@ -32,6 +36,7 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 	private final Long2ObjectMap<LongSet> sourcesBySection = new Long2ObjectOpenHashMap<>();
 	protected final LongLinkedOpenHashSet dirtySources = new LongLinkedOpenHashSet();
 	private final LongLinkedOpenHashSet dirtySections = new LongLinkedOpenHashSet();
+	private int framesSinceMerge;
 	// For rescan
 	private final LongSet loadedChunks = new LongOpenHashSet();
 
@@ -54,6 +59,11 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 		return field.reaches(pos);
 	}
 
+	// How many sections away the sources of the fields isAffected may accept are (fields reach one section out)
+	protected int affectedSectionRadius(final BlockState oldState, final BlockState newState) {
+		return 1;
+	}
+
 	protected void lightPropertiesChanged(final BlockPos pos) {
 	}
 
@@ -72,7 +82,7 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 		}
 
 		if (LightEngine.hasDifferentLightProperties(oldState, newState)) {
-			this.forEachSourceAround(SectionPos.blockToSection(node), source -> {
+			this.forEachSourceWithin(SectionPos.blockToSection(node), this.affectedSectionRadius(oldState, newState), source -> {
 				if (this.isAffected(this.fields.get(source), pos, oldState, newState)) {
 					this.dirtySources.add(source);
 				}
@@ -137,9 +147,15 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 			return;
 		}
 
-		// Big batches (chunk loads, many emitters) are spread over several frames
-		long deadline = System.nanoTime() + BUDGET_NANOS;
-		while (!this.dirtySources.isEmpty() && System.nanoTime() < deadline) {
+		// Big batches (chunk loads, many emitters) are spread over several frames. Their merges wait until the fills are
+		// done, so sections aren't rebuilt for every step, except every MERGE_INTERVAL frames, when half the budget goes
+		// to merging what's filled so far: joining a world full of emitters shows them as they're done
+		long start = System.nanoTime();
+		long budget = this.dirtySources.size() >= BIG_BATCH ? BIG_BATCH_BUDGET_NANOS : BUDGET_NANOS;
+		long deadline = start + budget;
+		boolean mergeDue = this.dirtySources.isEmpty() || ++this.framesSinceMerge >= MERGE_INTERVAL;
+		long fillDeadline = mergeDue ? start + budget / 2 : deadline;
+		while (!this.dirtySources.isEmpty() && System.nanoTime() < fillDeadline) {
 			long node = this.dirtySources.removeFirstLong();
 			EmitterField oldField = this.removeField(node);
 			if (oldField != null) {
@@ -159,8 +175,10 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 			}
 		}
 
-		// Merge once the fills are done, so sections aren't rebuilt for every step of a big batch
-		while (this.dirtySources.isEmpty() && !this.dirtySections.isEmpty() && System.nanoTime() < deadline) {
+		if (mergeDue) {
+			this.framesSinceMerge = 0;
+		}
+		while (mergeDue && !this.dirtySections.isEmpty() && System.nanoTime() < deadline) {
 			LongSet sections = new LongOpenHashSet();
 			while (sections.size() < MERGE_BATCH && !this.dirtySections.isEmpty()) {
 				sections.add(this.dirtySections.removeFirstLong());
@@ -178,9 +196,14 @@ abstract class EmitterLightOverlay implements BlockLightOverlay {
 
 	// Sources whose field can reach the section: those in the 3×3×3 sections around it
 	protected void forEachSourceAround(final long sectionKey, final LongConsumer consumer) {
-		for (int sx = SectionPos.x(sectionKey) - 1; sx <= SectionPos.x(sectionKey) + 1; sx++) {
-			for (int sy = SectionPos.y(sectionKey) - 1; sy <= SectionPos.y(sectionKey) + 1; sy++) {
-				for (int sz = SectionPos.z(sectionKey) - 1; sz <= SectionPos.z(sectionKey) + 1; sz++) {
+		this.forEachSourceWithin(sectionKey, 1, consumer);
+	}
+
+	// Sources in the sections up to radius sections away
+	private void forEachSourceWithin(final long sectionKey, final int radius, final LongConsumer consumer) {
+		for (int sx = SectionPos.x(sectionKey) - radius; sx <= SectionPos.x(sectionKey) + radius; sx++) {
+			for (int sy = SectionPos.y(sectionKey) - radius; sy <= SectionPos.y(sectionKey) + radius; sy++) {
+				for (int sz = SectionPos.z(sectionKey) - radius; sz <= SectionPos.z(sectionKey) + radius; sz++) {
 					LongSet sources = this.sourcesBySection.get(SectionPos.asLong(sx, sy, sz));
 					if (sources != null) {
 						sources.forEach(consumer);

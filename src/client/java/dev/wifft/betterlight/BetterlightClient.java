@@ -14,6 +14,8 @@ public class BetterlightClient implements ClientModInitializer {
 		CommonLifecycleEvents.TAGS_LOADED.register((registries, client) -> {
 			if (client) {
 				EmitterTags.reloadFallback();
+				// Singleplayer and LAN hosts share the option with their own server
+				EmitterTags.setFrontFollowsServer(!Minecraft.getInstance().isLocalServer());
 				rescanEmitters();
 			}
 		});

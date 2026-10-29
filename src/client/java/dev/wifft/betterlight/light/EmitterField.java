@@ -81,7 +81,13 @@ final class EmitterField {
 	}
 
 	boolean inBox(final int x, final int y, final int z) {
-		return Math.abs(x - this.x) <= RADIUS && Math.abs(y - this.y) <= RADIUS && Math.abs(z - this.z) <= RADIUS;
+		return this.nearBox(x, y, z, 0);
+	}
+
+	// Within margin blocks of the box
+	boolean nearBox(final int x, final int y, final int z, final int margin) {
+		int reach = RADIUS + margin;
+		return Math.abs(x - this.x) <= reach && Math.abs(y - this.y) <= reach && Math.abs(z - this.z) <= reach;
 	}
 
 	// Whether the fill reached pos or one of its neighbours, the only fills a block change there can alter. The
